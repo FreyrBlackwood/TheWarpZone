@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TheWarpZone.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
