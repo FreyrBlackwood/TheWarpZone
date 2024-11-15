@@ -4,4 +4,5 @@ public class ApplicationUser : IdentityUser
 {
     public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
     public ICollection<UserMediaList> UserMediaLists { get; set; } = new List<UserMediaList>();
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
