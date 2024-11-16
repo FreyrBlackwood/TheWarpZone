@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TheWarpZone.Common\TheWarpZone.Common.csproj" />
     <ProjectReference Include="..\TheWarpZone.Data.Models\TheWarpZone.Data.Models.csproj" />
   </ItemGroup>
 

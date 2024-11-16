@@ -94,20 +94,27 @@ namespace TheWarpZone.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MediaId")
+                    b.Property<int?>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("TVShowId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("TVShowId");
 
                     b.ToTable("CastMembers");
                 });
@@ -122,7 +129,8 @@ namespace TheWarpZone.Data.Migrations
 
                     b.Property<string>("EpisodeDescription")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("EpisodeNumber")
                         .HasColumnType("int");
@@ -132,58 +140,14 @@ namespace TheWarpZone.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SeasonId");
 
-                    b.ToTable("Episodes");
-                });
-
-            modelBuilder.Entity("Media", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Overview")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ReleaseDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Media");
-
-                    b.UseTptMappingStrategy();
-                });
-
-            modelBuilder.Entity("MediaTag", b =>
-                {
-                    b.Property<int>("MediaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MediaId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("MediaTags", (string)null);
+                    b.ToTable("Episodes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -323,6 +287,52 @@ namespace TheWarpZone.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Movie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Director")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Movies", (string)null);
+                });
+
+            modelBuilder.Entity("MovieTag", b =>
+                {
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MoviesId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("MovieTags", (string)null);
+                });
+
             modelBuilder.Entity("Rating", b =>
                 {
                     b.Property<int>("Id")
@@ -331,7 +341,10 @@ namespace TheWarpZone.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MediaId")
+                    b.Property<int?>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TVShowId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -343,7 +356,9 @@ namespace TheWarpZone.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("TVShowId");
 
                     b.HasIndex("UserId");
 
@@ -363,11 +378,14 @@ namespace TheWarpZone.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("MediaId")
+                    b.Property<int?>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("PostedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("TVShowId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -375,7 +393,9 @@ namespace TheWarpZone.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("TVShowId");
 
                     b.HasIndex("UserId");
 
@@ -400,7 +420,48 @@ namespace TheWarpZone.Data.Migrations
 
                     b.HasIndex("TVShowId");
 
-                    b.ToTable("Seasons");
+                    b.ToTable("Seasons", (string)null);
+                });
+
+            modelBuilder.Entity("TVShow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TVShows", (string)null);
+                });
+
+            modelBuilder.Entity("TVShowTag", b =>
+                {
+                    b.Property<int>("TVShowsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TVShowsId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("TVShowTags", (string)null);
                 });
 
             modelBuilder.Entity("Tag", b =>
@@ -413,7 +474,8 @@ namespace TheWarpZone.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -428,10 +490,16 @@ namespace TheWarpZone.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MediaId")
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TVShowId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -440,40 +508,32 @@ namespace TheWarpZone.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("TVShowId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserMediaLists");
-                });
-
-            modelBuilder.Entity("Movie", b =>
-                {
-                    b.HasBaseType("Media");
-
-                    b.Property<string>("Director")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("Movies", (string)null);
-                });
-
-            modelBuilder.Entity("TVShow", b =>
-                {
-                    b.HasBaseType("Media");
-
-                    b.ToTable("TVShows", (string)null);
+                    b.ToTable("UserMediaLists", (string)null);
                 });
 
             modelBuilder.Entity("CastMember", b =>
                 {
-                    b.HasOne("Media", "Media")
+                    b.HasOne("Movie", "Movie")
                         .WithMany("CastMembers")
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Media");
+                    b.HasOne("TVShow", "TVShow")
+                        .WithMany("CastMembers")
+                        .HasForeignKey("TVShowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("TVShow");
                 });
 
             modelBuilder.Entity("Episode", b =>
@@ -485,21 +545,6 @@ namespace TheWarpZone.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Season");
-                });
-
-            modelBuilder.Entity("MediaTag", b =>
-                {
-                    b.HasOne("Media", null)
-                        .WithMany()
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -553,13 +598,32 @@ namespace TheWarpZone.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Rating", b =>
+            modelBuilder.Entity("MovieTag", b =>
                 {
-                    b.HasOne("Media", "Media")
-                        .WithMany("Ratings")
-                        .HasForeignKey("MediaId")
+                    b.HasOne("Movie", null)
+                        .WithMany()
+                        .HasForeignKey("MoviesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Rating", b =>
+                {
+                    b.HasOne("Movie", "Movie")
+                        .WithMany("Ratings")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TVShow", "TVShow")
+                        .WithMany("Ratings")
+                        .HasForeignKey("TVShowId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ApplicationUser", "User")
                         .WithMany("Ratings")
@@ -567,26 +631,34 @@ namespace TheWarpZone.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Media");
+                    b.Navigation("Movie");
+
+                    b.Navigation("TVShow");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Review", b =>
                 {
-                    b.HasOne("Media", "Media")
+                    b.HasOne("Movie", "Movie")
                         .WithMany("Reviews")
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("TVShow", "TVShow")
+                        .WithMany("Reviews")
+                        .HasForeignKey("TVShowId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ApplicationUser", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Media");
+                    b.Navigation("Movie");
+
+                    b.Navigation("TVShow");
 
                     b.Navigation("User");
                 });
@@ -602,41 +674,48 @@ namespace TheWarpZone.Data.Migrations
                     b.Navigation("TVShow");
                 });
 
-            modelBuilder.Entity("UserMediaList", b =>
+            modelBuilder.Entity("TVShowTag", b =>
                 {
-                    b.HasOne("Media", "Media")
+                    b.HasOne("TVShow", null)
                         .WithMany()
-                        .HasForeignKey("MediaId")
+                        .HasForeignKey("TVShowsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ApplicationUser", "User")
+                    b.HasOne("Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UserMediaList", b =>
+                {
+                    b.HasOne("ApplicationUser", null)
                         .WithMany("UserMediaLists")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TVShow", "TVShow")
+                        .WithMany()
+                        .HasForeignKey("TVShowId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ApplicationUser", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Media");
+                    b.Navigation("Movie");
+
+                    b.Navigation("TVShow");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Movie", b =>
-                {
-                    b.HasOne("Media", null)
-                        .WithOne()
-                        .HasForeignKey("Movie", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TVShow", b =>
-                {
-                    b.HasOne("Media", null)
-                        .WithOne()
-                        .HasForeignKey("TVShow", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ApplicationUser", b =>
@@ -648,7 +727,7 @@ namespace TheWarpZone.Data.Migrations
                     b.Navigation("UserMediaLists");
                 });
 
-            modelBuilder.Entity("Media", b =>
+            modelBuilder.Entity("Movie", b =>
                 {
                     b.Navigation("CastMembers");
 
@@ -664,6 +743,12 @@ namespace TheWarpZone.Data.Migrations
 
             modelBuilder.Entity("TVShow", b =>
                 {
+                    b.Navigation("CastMembers");
+
+                    b.Navigation("Ratings");
+
+                    b.Navigation("Reviews");
+
                     b.Navigation("Seasons");
                 });
 #pragma warning restore 612, 618

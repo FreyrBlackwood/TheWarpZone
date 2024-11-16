@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using TheWarpZone.Common.Constraints;
 
 public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 {
@@ -7,18 +8,23 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
     {
         builder.ToTable("Reviews");
 
-        builder.HasOne(r => r.Media)
-               .WithMany(m => m.Reviews)
-               .HasForeignKey(r => r.MediaId)
-               .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne(r => r.User)
-               .WithMany(u => u.Reviews)
-               .HasForeignKey(r => r.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+        builder.HasKey(r => r.Id);
 
         builder.Property(r => r.Comment)
                .IsRequired()
-               .HasMaxLength(1000);
+               .HasMaxLength(ReviewConstraints.CommentMaxLength);
+
+        builder.Property(r => r.PostedDate)
+               .IsRequired();
+
+        builder.HasOne(r => r.Movie)
+               .WithMany(m => m.Reviews)
+               .HasForeignKey(r => r.MovieId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(r => r.TVShow)
+               .WithMany(tv => tv.Reviews)
+               .HasForeignKey(r => r.TVShowId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

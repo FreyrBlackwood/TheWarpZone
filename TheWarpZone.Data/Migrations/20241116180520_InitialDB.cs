@@ -51,19 +51,19 @@ namespace TheWarpZone.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Media",
+                name: "Movies",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Overview = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Director = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Media", x => x.Id);
+                    table.PrimaryKey("PK_Movies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,11 +72,26 @@ namespace TheWarpZone.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TVShows",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TVShows", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,40 +201,53 @@ namespace TheWarpZone.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CastMembers",
+                name: "MovieTags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MediaId = table.Column<int>(type: "int", nullable: false)
+                    MoviesId = table.Column<int>(type: "int", nullable: false),
+                    TagsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CastMembers", x => x.Id);
+                    table.PrimaryKey("PK_MovieTags", x => new { x.MoviesId, x.TagsId });
                     table.ForeignKey(
-                        name: "FK_CastMembers_Media_MediaId",
-                        column: x => x.MediaId,
-                        principalTable: "Media",
+                        name: "FK_MovieTags_Movies_MoviesId",
+                        column: x => x.MoviesId,
+                        principalTable: "Movies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MovieTags_Tags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Movies",
+                name: "CastMembers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Director = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MovieId = table.Column<int>(type: "int", nullable: true),
+                    TVShowId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Movies", x => x.Id);
+                    table.PrimaryKey("PK_CastMembers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Movies_Media_Id",
-                        column: x => x.Id,
-                        principalTable: "Media",
+                        name: "FK_CastMembers_Movies_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "Movies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CastMembers_TVShows_TVShowId",
+                        column: x => x.TVShowId,
+                        principalTable: "TVShows",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -231,7 +259,8 @@ namespace TheWarpZone.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Value = table.Column<int>(type: "int", nullable: false),
-                    MediaId = table.Column<int>(type: "int", nullable: false),
+                    MovieId = table.Column<int>(type: "int", nullable: true),
+                    TVShowId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -244,9 +273,15 @@ namespace TheWarpZone.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Ratings_Media_MediaId",
-                        column: x => x.MediaId,
-                        principalTable: "Media",
+                        name: "FK_Ratings_Movies_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "Movies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ratings_TVShows_TVShowId",
+                        column: x => x.TVShowId,
+                        principalTable: "TVShows",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -259,7 +294,8 @@ namespace TheWarpZone.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     PostedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MediaId = table.Column<int>(type: "int", nullable: false),
+                    MovieId = table.Column<int>(type: "int", nullable: true),
+                    TVShowId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -270,79 +306,17 @@ namespace TheWarpZone.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Reviews_Media_MediaId",
-                        column: x => x.MediaId,
-                        principalTable: "Media",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TVShows",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TVShows", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TVShows_Media_Id",
-                        column: x => x.Id,
-                        principalTable: "Media",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserMediaLists",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    MediaId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserMediaLists", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserMediaLists_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_Reviews_Movies_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserMediaLists_Media_MediaId",
-                        column: x => x.MediaId,
-                        principalTable: "Media",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MediaTags",
-                columns: table => new
-                {
-                    MediaId = table.Column<int>(type: "int", nullable: false),
-                    TagsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MediaTags", x => new { x.MediaId, x.TagsId });
-                    table.ForeignKey(
-                        name: "FK_MediaTags_Media_MediaId",
-                        column: x => x.MediaId,
-                        principalTable: "Media",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MediaTags_Tags_TagsId",
-                        column: x => x.TagsId,
-                        principalTable: "Tags",
+                        name: "FK_Reviews_TVShows_TVShowId",
+                        column: x => x.TVShowId,
+                        principalTable: "TVShows",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -368,14 +342,78 @@ namespace TheWarpZone.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TVShowTags",
+                columns: table => new
+                {
+                    TVShowsId = table.Column<int>(type: "int", nullable: false),
+                    TagsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TVShowTags", x => new { x.TVShowsId, x.TagsId });
+                    table.ForeignKey(
+                        name: "FK_TVShowTags_TVShows_TVShowsId",
+                        column: x => x.TVShowsId,
+                        principalTable: "TVShows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TVShowTags_Tags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserMediaLists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    MovieId = table.Column<int>(type: "int", nullable: true),
+                    TVShowId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserMediaLists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserMediaLists_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserMediaLists_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserMediaLists_Movies_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "Movies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserMediaLists_TVShows_TVShowId",
+                        column: x => x.TVShowId,
+                        principalTable: "TVShows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Episodes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EpisodeNumber = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EpisodeDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    EpisodeDescription = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     SeasonId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -429,9 +467,14 @@ namespace TheWarpZone.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CastMembers_MediaId",
+                name: "IX_CastMembers_MovieId",
                 table: "CastMembers",
-                column: "MediaId");
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CastMembers_TVShowId",
+                table: "CastMembers",
+                column: "TVShowId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Episodes_SeasonId",
@@ -439,14 +482,19 @@ namespace TheWarpZone.Data.Migrations
                 column: "SeasonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MediaTags_TagsId",
-                table: "MediaTags",
+                name: "IX_MovieTags_TagsId",
+                table: "MovieTags",
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ratings_MediaId",
+                name: "IX_Ratings_MovieId",
                 table: "Ratings",
-                column: "MediaId");
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_TVShowId",
+                table: "Ratings",
+                column: "TVShowId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_UserId",
@@ -454,9 +502,14 @@ namespace TheWarpZone.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_MediaId",
+                name: "IX_Reviews_MovieId",
                 table: "Reviews",
-                column: "MediaId");
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_TVShowId",
+                table: "Reviews",
+                column: "TVShowId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_UserId",
@@ -469,9 +522,24 @@ namespace TheWarpZone.Data.Migrations
                 column: "TVShowId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserMediaLists_MediaId",
+                name: "IX_TVShowTags_TagsId",
+                table: "TVShowTags",
+                column: "TagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMediaLists_ApplicationUserId",
                 table: "UserMediaLists",
-                column: "MediaId");
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMediaLists_MovieId",
+                table: "UserMediaLists",
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMediaLists_TVShowId",
+                table: "UserMediaLists",
+                column: "TVShowId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserMediaLists_UserId",
@@ -504,16 +572,16 @@ namespace TheWarpZone.Data.Migrations
                 name: "Episodes");
 
             migrationBuilder.DropTable(
-                name: "MediaTags");
-
-            migrationBuilder.DropTable(
-                name: "Movies");
+                name: "MovieTags");
 
             migrationBuilder.DropTable(
                 name: "Ratings");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "TVShowTags");
 
             migrationBuilder.DropTable(
                 name: "UserMediaLists");
@@ -531,10 +599,10 @@ namespace TheWarpZone.Data.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "TVShows");
+                name: "Movies");
 
             migrationBuilder.DropTable(
-                name: "Media");
+                name: "TVShows");
         }
     }
 }

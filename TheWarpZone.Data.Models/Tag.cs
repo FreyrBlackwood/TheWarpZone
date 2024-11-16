@@ -1,8 +1,14 @@
-﻿public class Tag
+﻿using System.ComponentModel.DataAnnotations;
+using TheWarpZone.Common.Constraints;
+
+public class Tag
 {
     public int Id { get; set; }
+
+    [Required]
+    [MaxLength(TagConstraints.NameMaxLength)]
     public string Name { get; set; }
 
-    // Navigation Properties
-    public ICollection<Media> Media { get; set; } = new List<Media>();
+    public ICollection<Movie> Movies { get; set; } = new List<Movie>();
+    public ICollection<TVShow> TVShows { get; set; } = new List<TVShow>();
 }

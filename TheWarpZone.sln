@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheWarpZone.Web", "TheWarpZone.Web\TheWarpZone.Web.csproj", "{CC380866-3E9B-4CBC-B744-E41772CD791E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheWarpZone.Web", "TheWarpZone.Web\TheWarpZone.Web.csproj", "{CC380866-3E9B-4CBC-B744-E41772CD791E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheWarpZone.Data", "TheWarpZone.Data\TheWarpZone.Data.csproj", "{97DB9ADC-2360-4381-B4EC-947081E16594}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheWarpZone.Data", "TheWarpZone.Data\TheWarpZone.Data.csproj", "{97DB9ADC-2360-4381-B4EC-947081E16594}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheWarpZone.Data.Models", "TheWarpZone.Data.Models\TheWarpZone.Data.Models.csproj", "{FF7098A1-6B45-4910-A51F-2069600607AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheWarpZone.Data.Models", "TheWarpZone.Data.Models\TheWarpZone.Data.Models.csproj", "{FF7098A1-6B45-4910-A51F-2069600607AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheWarpZone.Services", "TheWarpZone.Services\TheWarpZone.Services.csproj", "{849C64AA-FFF6-4A78-906A-252B38871076}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheWarpZone.Services", "TheWarpZone.Services\TheWarpZone.Services.csproj", "{849C64AA-FFF6-4A78-906A-252B38871076}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheWarpZone.Common", "TheWarpZone.Common\TheWarpZone.Common.csproj", "{9B2A6686-9A77-43C6-A33F-F841FA43E578}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{849C64AA-FFF6-4A78-906A-252B38871076}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{849C64AA-FFF6-4A78-906A-252B38871076}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{849C64AA-FFF6-4A78-906A-252B38871076}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B2A6686-9A77-43C6-A33F-F841FA43E578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B2A6686-9A77-43C6-A33F-F841FA43E578}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B2A6686-9A77-43C6-A33F-F841FA43E578}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B2A6686-9A77-43C6-A33F-F841FA43E578}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

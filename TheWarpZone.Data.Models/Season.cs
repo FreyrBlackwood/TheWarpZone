@@ -1,12 +1,16 @@
-﻿public class Season
+﻿using System.ComponentModel.DataAnnotations;
+using TheWarpZone.Common.Constraints;
+
+public class Season
 {
     public int Id { get; set; }
+
+    [Required]
+    [Range(SeasonConstraints.SeasonNumberMin, int.MaxValue)]
     public int SeasonNumber { get; set; }
 
-    // Foreign Key to TVShow
+    public ICollection<Episode> Episodes { get; set; } = new List<Episode>();
+
     public int TVShowId { get; set; }
     public TVShow TVShow { get; set; }
-
-    // Navigation Property for Episodes
-    public ICollection<Episode> Episodes { get; set; } = new List<Episode>();
 }
