@@ -21,6 +21,7 @@ public class Movie
     [MinLength(MovieConstraints.DirectorMinLength)]
     public string Director { get; set; }
 
+    public string ImageUrl { get; set; }
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
     public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
