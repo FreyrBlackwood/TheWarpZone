@@ -29,6 +29,9 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IEpisodeService, EpisodeService>();
 builder.Services.AddScoped<ISeasonService, SeasonService>();
 builder.Services.AddScoped<ITVShowService, TVShowService>();
+builder.Services.AddScoped<IRatingService, RatingService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IUserMediaListService, UserMediaListService>();
 
 
 var app = builder.Build();

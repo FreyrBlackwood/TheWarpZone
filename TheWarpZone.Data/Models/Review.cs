@@ -12,6 +12,8 @@ public class Review
 
     public DateTime PostedDate { get; set; } = DateTime.UtcNow;
 
+    public DateTime? UpdatedAt { get; set; }
+
     public int? MovieId { get; set; }
     public Movie Movie { get; set; }
 
