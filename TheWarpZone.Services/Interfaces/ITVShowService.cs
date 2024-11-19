@@ -8,7 +8,7 @@ namespace TheWarpZone.Services.Interfaces
     {
         Task<IEnumerable<TVShow>> GetAllTVShowsAsync();
 
-        Task<TVShow> GetTVShowDetailsAsync(int id, bool includeSeasonsAndEpisodes = true);
+        Task<TVShow> GetTVShowDetailsAsync(int id);
 
         Task AddTVShowAsync(TVShow tvShow);
 

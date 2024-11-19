@@ -26,6 +26,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IEpisodeService, EpisodeService>();
+builder.Services.AddScoped<ISeasonService, SeasonService>();
+builder.Services.AddScoped<ITVShowService, TVShowService>();
+
 
 var app = builder.Build();
 
