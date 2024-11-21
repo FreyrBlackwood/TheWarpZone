@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TheWarpZone.Services.Interfaces;
 using TheWarpZone.Services;
+using TheWarpZone.Data;
 using TheWarpZone.Web.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -59,7 +60,7 @@ using (var scope = app.Services.CreateScope())
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
     {
-        adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail };
+        adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
         var result = await userManager.CreateAsync(adminUser, adminPassword);
         if (result.Succeeded)
         {
