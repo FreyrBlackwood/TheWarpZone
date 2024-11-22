@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
+using TheWarpZone.Data.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
@@ -16,35 +18,31 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Tag>> GetAllTagsAsync()
+        public async Task<IEnumerable<TagDto>> GetAllTagsAsync()
         {
-            return await _context.Tags
-                .OrderBy(t => t.Name)
-                .ToListAsync();
+            var tags = await _context.Tags.ToListAsync();
+            return tags.Select(TagMapper.ToDto).ToList();
         }
 
-        public async Task<Tag> GetTagByIdAsync(int id)
+        public async Task<TagDto> GetTagByIdAsync(int id)
         {
             var tag = await _context.Tags.FindAsync(id);
             if (tag == null)
             {
                 throw new KeyNotFoundException($"Tag with ID {id} not found.");
             }
-            return tag;
+
+            return TagMapper.ToDto(tag);
         }
 
-        public async Task AddTagAsync(Tag tag)
+        public async Task AddTagAsync(TagDto tagDto)
         {
-            if (string.IsNullOrWhiteSpace(tag.Name))
+            if (tagDto == null)
             {
-                throw new ArgumentException("Tag name cannot be empty.", nameof(tag.Name));
+                throw new ArgumentNullException(nameof(tagDto), "Tag cannot be null.");
             }
 
-            var exists = await _context.Tags.AnyAsync(t => t.Name == tag.Name);
-            if (exists)
-            {
-                throw new InvalidOperationException($"A tag with the name '{tag.Name}' already exists.");
-            }
+            var tag = TagMapper.ToEntity(tagDto);
 
             await _context.Tags.AddAsync(tag);
             await _context.SaveChangesAsync();
@@ -62,32 +60,22 @@ namespace TheWarpZone.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Movie>> GetMoviesByTagAsync(int tagId)
+        public async Task<IEnumerable<MovieDto>> GetMoviesByTagAsync(int tagId)
         {
-            var tag = await _context.Tags
-                .Include(t => t.Movies)
-                .FirstOrDefaultAsync(t => t.Id == tagId);
+            var movies = await _context.Movies
+                .Where(m => m.Tags.Any(t => t.Id == tagId))
+                .ToListAsync();
 
-            if (tag == null)
-            {
-                throw new KeyNotFoundException($"Tag with ID {tagId} not found.");
-            }
-
-            return tag.Movies;
+            return movies.Select(MovieMapper.ToDto).ToList();
         }
 
-        public async Task<IEnumerable<TVShow>> GetTVShowsByTagAsync(int tagId)
+        public async Task<IEnumerable<TVShowDto>> GetTVShowsByTagAsync(int tagId)
         {
-            var tag = await _context.Tags
-                .Include(t => t.TVShows)
-                .FirstOrDefaultAsync(t => t.Id == tagId);
+            var tvShows = await _context.TVShows
+                .Where(tv => tv.Tags.Any(t => t.Id == tagId))
+                .ToListAsync();
 
-            if (tag == null)
-            {
-                throw new KeyNotFoundException($"Tag with ID {tagId} not found.");
-            }
-
-            return tag.TVShows;
+            return tvShows.Select(TVShowMapper.ToDto).ToList();
         }
     }
 }

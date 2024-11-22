@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
+using TheWarpZone.Data.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
@@ -16,11 +19,6 @@ namespace TheWarpZone.Services
 
         public async Task AddOrUpdateRatingForMovieAsync(int movieId, int ratingValue, string userId)
         {
-            if (ratingValue < 1 || ratingValue > 5)
-            {
-                throw new ArgumentOutOfRangeException(nameof(ratingValue), "Rating value must be between 1 and 5.");
-            }
-
             var existingRating = await _context.Ratings
                 .FirstOrDefaultAsync(r => r.MovieId == movieId && r.UserId == userId);
 
@@ -31,13 +29,15 @@ namespace TheWarpZone.Services
             }
             else
             {
-                var newRating = new Rating
+                var newRating = new RatingDto
                 {
-                    MovieId = movieId,
                     Value = ratingValue,
+                    MovieId = movieId,
                     UserId = userId
                 };
-                await _context.Ratings.AddAsync(newRating);
+
+                var entity = RatingMapper.ToEntity(newRating);
+                await _context.Ratings.AddAsync(entity);
             }
 
             await _context.SaveChangesAsync();
@@ -45,11 +45,6 @@ namespace TheWarpZone.Services
 
         public async Task AddOrUpdateRatingForTVShowAsync(int tvShowId, int ratingValue, string userId)
         {
-            if (ratingValue < 1 || ratingValue > 5)
-            {
-                throw new ArgumentOutOfRangeException(nameof(ratingValue), "Rating value must be between 1 and 5.");
-            }
-
             var existingRating = await _context.Ratings
                 .FirstOrDefaultAsync(r => r.TVShowId == tvShowId && r.UserId == userId);
 
@@ -60,13 +55,15 @@ namespace TheWarpZone.Services
             }
             else
             {
-                var newRating = new Rating
+                var newRating = new RatingDto
                 {
-                    TVShowId = tvShowId,
                     Value = ratingValue,
+                    TVShowId = tvShowId,
                     UserId = userId
                 };
-                await _context.Ratings.AddAsync(newRating);
+
+                var entity = RatingMapper.ToEntity(newRating);
+                await _context.Ratings.AddAsync(entity);
             }
 
             await _context.SaveChangesAsync();
@@ -74,20 +71,20 @@ namespace TheWarpZone.Services
 
         public async Task<double> GetAverageRatingForMovieAsync(int movieId)
         {
-            var averageRating = await _context.Ratings
+            var ratings = await _context.Ratings
                 .Where(r => r.MovieId == movieId)
-                .AverageAsync(r => (double?)r.Value);
+                .ToListAsync();
 
-            return averageRating ?? 0.0;
+            return ratings.Any() ? ratings.Average(r => r.Value) : 0;
         }
 
         public async Task<double> GetAverageRatingForTVShowAsync(int tvShowId)
         {
-            var averageRating = await _context.Ratings
+            var ratings = await _context.Ratings
                 .Where(r => r.TVShowId == tvShowId)
-                .AverageAsync(r => (double?)r.Value);
+                .ToListAsync();
 
-            return averageRating ?? 0.0;
+            return ratings.Any() ? ratings.Average(r => r.Value) : 0;
         }
     }
 }

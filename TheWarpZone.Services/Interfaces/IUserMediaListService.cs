@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TheWarpZone.Data;
+using TheWarpZone.Common.DTOs;
 
 namespace TheWarpZone.Services.Interfaces
 {
     public interface IUserMediaListService
     {
-        Task<IEnumerable<UserMediaList>> GetUserMediaListAsync(string userId);
-        Task AddToUserMediaListAsync(UserMediaList userMediaList);
+        Task<IEnumerable<UserMediaListDto>> GetUserMediaListAsync(string userId);
+        Task AddToUserMediaListAsync(UserMediaListDto userMediaListDto);
         Task UpdateMediaListStatusAsync(int id, MediaStatus status);
         Task RemoveFromUserMediaListAsync(int id);
     }

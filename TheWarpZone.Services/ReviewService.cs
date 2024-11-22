@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
+using TheWarpZone.Data.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
@@ -17,44 +18,54 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsForMovieAsync(int movieId)
+        public async Task<IEnumerable<ReviewDto>> GetReviewsForMovieAsync(int movieId)
         {
-            return await _context.Reviews
+            var reviews = await _context.Reviews
                 .Where(r => r.MovieId == movieId)
-                .OrderByDescending(r => r.PostedDate)
+                .Include(r => r.User)
                 .ToListAsync();
+
+            return reviews.Select(ReviewMapper.ToDto).ToList();
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsForTVShowAsync(int tvShowId)
+        public async Task<IEnumerable<ReviewDto>> GetReviewsForTVShowAsync(int tvShowId)
         {
-            return await _context.Reviews
+            var reviews = await _context.Reviews
                 .Where(r => r.TVShowId == tvShowId)
-                .OrderByDescending(r => r.PostedDate)
+                .Include(r => r.User)
                 .ToListAsync();
+
+            return reviews.Select(ReviewMapper.ToDto).ToList();
         }
 
-        public async Task AddReviewAsync(Review review)
+        public async Task AddReviewAsync(ReviewDto reviewDto)
         {
-            if (string.IsNullOrWhiteSpace(review.Comment))
+            if (reviewDto == null)
             {
-                throw new ArgumentException("Review comment cannot be empty.", nameof(review.Comment));
+                throw new ArgumentNullException(nameof(reviewDto), "Review cannot be null.");
             }
 
-            review.PostedDate = DateTime.UtcNow;
+            var review = ReviewMapper.ToEntity(reviewDto);
+
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateReviewAsync(Review review)
+        public async Task UpdateReviewAsync(ReviewDto reviewDto)
         {
-            var existingReview = await _context.Reviews.FindAsync(review.Id);
-            if (existingReview == null)
+            if (reviewDto == null)
             {
-                throw new KeyNotFoundException($"Review with ID {review.Id} not found.");
+                throw new ArgumentNullException(nameof(reviewDto), "Review cannot be null.");
             }
 
-            existingReview.Comment = review.Comment;
-            existingReview.UpdatedAt = DateTime.UtcNow;
+            var existingReview = await _context.Reviews.FindAsync(reviewDto.Id);
+            if (existingReview == null)
+            {
+                throw new KeyNotFoundException($"Review with ID {reviewDto.Id} not found.");
+            }
+
+            existingReview.Comment = reviewDto.Comment;
+            existingReview.PostedDate = reviewDto.PostedDate;
 
             _context.Reviews.Update(existingReview);
             await _context.SaveChangesAsync();

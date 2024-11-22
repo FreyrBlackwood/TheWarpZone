@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
+using TheWarpZone.Data.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
@@ -13,50 +18,43 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Season>> GetSeasonsByTVShowIdAsync(int tvShowId)
+        public async Task<IEnumerable<SeasonDto>> GetSeasonsByTVShowAsync(int tvShowId)
         {
-            return await _context.Seasons
+            var seasons = await _context.Seasons
                 .Where(s => s.TVShowId == tvShowId)
-                .OrderBy(s => s.SeasonNumber)
-                .ToListAsync();
-        }
-
-        public async Task<Season> GetSeasonDetailsAsync(int id)
-        {
-            var season = await _context.Seasons
                 .Include(s => s.Episodes)
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .ToListAsync();
 
-            if (season == null)
-            {
-                throw new KeyNotFoundException($"Season with ID {id} not found.");
-            }
-
-            return season;
+            return seasons.Select(SeasonMapper.ToDto).ToList();
         }
 
-        public async Task AddSeasonAsync(int tvShowId, Season season)
+        public async Task AddSeasonAsync(SeasonDto seasonDto)
         {
-            var tvShow = await _context.TVShows.FindAsync(tvShowId);
-            if (tvShow == null)
+            if (seasonDto == null)
             {
-                throw new KeyNotFoundException($"TV show with ID {tvShowId} not found.");
+                throw new ArgumentNullException(nameof(seasonDto), "Season cannot be null.");
             }
 
-            season.TVShowId = tvShowId;
+            var season = SeasonMapper.ToEntity(seasonDto);
+
             await _context.Seasons.AddAsync(season);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateSeasonAsync(Season season)
+        public async Task UpdateSeasonAsync(SeasonDto seasonDto)
         {
-            var existingSeason = await _context.Seasons.FindAsync(season.Id);
-            if (existingSeason == null)
+            if (seasonDto == null)
             {
-                throw new KeyNotFoundException($"Season with ID {season.Id} not found.");
+                throw new ArgumentNullException(nameof(seasonDto), "Season cannot be null.");
             }
 
-            existingSeason.SeasonNumber = season.SeasonNumber;
+            var existingSeason = await _context.Seasons.FindAsync(seasonDto.Id);
+            if (existingSeason == null)
+            {
+                throw new KeyNotFoundException($"Season with ID {seasonDto.Id} not found.");
+            }
+
+            existingSeason.SeasonNumber = seasonDto.SeasonNumber;
 
             _context.Seasons.Update(existingSeason);
             await _context.SaveChangesAsync();

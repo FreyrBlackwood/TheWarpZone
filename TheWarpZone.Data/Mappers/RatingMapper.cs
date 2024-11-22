@@ -14,7 +14,9 @@ namespace TheWarpZone.Data.Mappers
                 Id = rating.Id,
                 Value = rating.Value,
                 UserId = rating.UserId,
-                UserName = rating.User?.UserName
+                UserName = rating.User?.UserName,
+                MovieId = rating.MovieId,
+                TVShowId = rating.TVShowId
             };
         }
 
@@ -26,7 +28,9 @@ namespace TheWarpZone.Data.Mappers
             {
                 Id = dto.Id,
                 Value = dto.Value,
-                UserId = dto.UserId
+                UserId = dto.UserId,
+                MovieId = dto.MovieId,
+                TVShowId = dto.TVShowId
             };
         }
     }

@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TheWarpZone.Data;
+using TheWarpZone.Common.DTOs;
 
 namespace TheWarpZone.Services.Interfaces
 {
     public interface ITagService
     {
-        Task<IEnumerable<Tag>> GetAllTagsAsync();
-        Task<Tag> GetTagByIdAsync(int id);
-        Task AddTagAsync(Tag tag);
+        Task<IEnumerable<TagDto>> GetAllTagsAsync();
+        Task<TagDto> GetTagByIdAsync(int id);
+        Task AddTagAsync(TagDto tagDto);
         Task DeleteTagAsync(int id);
-        Task<IEnumerable<Movie>> GetMoviesByTagAsync(int tagId);
-        Task<IEnumerable<TVShow>> GetTVShowsByTagAsync(int tagId);
+        Task<IEnumerable<MovieDto>> GetMoviesByTagAsync(int tagId);
+        Task<IEnumerable<TVShowDto>> GetTVShowsByTagAsync(int tagId);
     }
 }

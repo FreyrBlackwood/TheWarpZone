@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
+using TheWarpZone.Data.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
@@ -13,18 +18,18 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Episode>> GetEpisodesBySeasonIdAsync(int seasonId)
+        public async Task<IEnumerable<EpisodeDto>> GetEpisodesBySeasonAsync(int seasonId)
         {
-            return await _context.Episodes
+            var episodes = await _context.Episodes
                 .Where(e => e.SeasonId == seasonId)
-                .OrderBy(e => e.EpisodeNumber)
                 .ToListAsync();
+
+            return episodes.Select(EpisodeMapper.ToDto).ToList();
         }
 
-        public async Task<Episode> GetEpisodeDetailsAsync(int id)
+        public async Task<EpisodeDto> GetEpisodeDetailsAsync(int id)
         {
             var episode = await _context.Episodes
-                .Include(e => e.Season)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (episode == null)
@@ -32,33 +37,38 @@ namespace TheWarpZone.Services
                 throw new KeyNotFoundException($"Episode with ID {id} not found.");
             }
 
-            return episode;
+            return EpisodeMapper.ToDto(episode);
         }
 
-        public async Task AddEpisodeAsync(int seasonId, Episode episode)
+        public async Task AddEpisodeAsync(EpisodeDto episodeDto)
         {
-            var season = await _context.Seasons.FindAsync(seasonId);
-            if (season == null)
+            if (episodeDto == null)
             {
-                throw new KeyNotFoundException($"Season with ID {seasonId} not found.");
+                throw new ArgumentNullException(nameof(episodeDto), "Episode cannot be null.");
             }
 
-            episode.SeasonId = seasonId;
+            var episode = EpisodeMapper.ToEntity(episodeDto);
+
             await _context.Episodes.AddAsync(episode);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateEpisodeAsync(Episode episode)
+        public async Task UpdateEpisodeAsync(EpisodeDto episodeDto)
         {
-            var existingEpisode = await _context.Episodes.FindAsync(episode.Id);
-            if (existingEpisode == null)
+            if (episodeDto == null)
             {
-                throw new KeyNotFoundException($"Episode with ID {episode.Id} not found.");
+                throw new ArgumentNullException(nameof(episodeDto), "Episode cannot be null.");
             }
 
-            existingEpisode.Title = episode.Title;
-            existingEpisode.EpisodeDescription = episode.EpisodeDescription;
-            existingEpisode.EpisodeNumber = episode.EpisodeNumber;
+            var existingEpisode = await _context.Episodes.FindAsync(episodeDto.Id);
+            if (existingEpisode == null)
+            {
+                throw new KeyNotFoundException($"Episode with ID {episodeDto.Id} not found.");
+            }
+
+            existingEpisode.Title = episodeDto.Title;
+            existingEpisode.EpisodeDescription = episodeDto.Description;
+            existingEpisode.EpisodeNumber = episodeDto.EpisodeNumber;
 
             _context.Episodes.Update(existingEpisode);
             await _context.SaveChangesAsync();

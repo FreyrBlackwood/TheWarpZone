@@ -1,19 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TheWarpZone.Data;
+using TheWarpZone.Common.DTOs;
 
 namespace TheWarpZone.Services.Interfaces
 {
     public interface IEpisodeService
     {
-        Task<IEnumerable<Episode>> GetEpisodesBySeasonIdAsync(int seasonId);
-
-        Task<Episode> GetEpisodeDetailsAsync(int episodeId);
-
-        Task AddEpisodeAsync(int seasonId, Episode episode);
-
-        Task UpdateEpisodeAsync(Episode episode);
-
-        Task DeleteEpisodeAsync(int episodeId);
+        Task<IEnumerable<EpisodeDto>> GetEpisodesBySeasonAsync(int seasonId);
+        Task<EpisodeDto> GetEpisodeDetailsAsync(int id);
+        Task AddEpisodeAsync(EpisodeDto episodeDto);
+        Task UpdateEpisodeAsync(EpisodeDto episodeDto);
+        Task DeleteEpisodeAsync(int id);
     }
 }

@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
+using TheWarpZone.Data.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
@@ -13,16 +18,17 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Movie>> GetAllMoviesAsync()
+        public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
         {
-            return await _context.Movies
+            var movies = await _context.Movies
                 .Include(m => m.Tags)
                 .Include(m => m.Ratings)
-                .Include(m => m.Reviews)
                 .ToListAsync();
+
+            return movies.Select(MovieMapper.ToDto).ToList();
         }
 
-        public async Task<Movie> GetMovieDetailsAsync(int id)
+        public async Task<MovieDto> GetMovieDetailsAsync(int id)
         {
             var movie = await _context.Movies
                 .Include(m => m.Tags)
@@ -36,40 +42,42 @@ namespace TheWarpZone.Services
                 throw new KeyNotFoundException($"Movie with ID {id} not found.");
             }
 
-            return movie;
+            return MovieMapper.ToDto(movie);
         }
 
-        public async Task AddMovieAsync(Movie movie)
+        public async Task AddMovieAsync(MovieDto movieDto)
         {
-            if (movie == null)
+            if (movieDto == null)
             {
-                throw new ArgumentNullException(nameof(movie), "Movie cannot be null.");
+                throw new ArgumentNullException(nameof(movieDto), "Movie cannot be null.");
             }
+
+            var movie = MovieMapper.ToEntity(movieDto);
 
             await _context.Movies.AddAsync(movie);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateMovieAsync(Movie movie)
+        public async Task UpdateMovieAsync(MovieDto movieDto)
         {
-            if (movie == null)
+            if (movieDto == null)
             {
-                throw new ArgumentNullException(nameof(movie), "Movie cannot be null.");
+                throw new ArgumentNullException(nameof(movieDto), "Movie cannot be null.");
             }
 
-            var existingMovie = await _context.Movies.FindAsync(movie.Id);
+            var existingMovie = await _context.Movies.FindAsync(movieDto.Id);
             if (existingMovie == null)
             {
-                throw new KeyNotFoundException($"Movie with ID {movie.Id} not found.");
+                throw new KeyNotFoundException($"Movie with ID {movieDto.Id} not found.");
             }
 
-            existingMovie.Title = movie.Title;
-            existingMovie.Description = movie.Description;
-            existingMovie.Director = movie.Director;
-            existingMovie.ReleaseDate = movie.ReleaseDate;
-            existingMovie.ImageUrl = movie.ImageUrl;
+            existingMovie.Title = movieDto.Title;
+            existingMovie.Description = movieDto.Description;
+            existingMovie.Director = movieDto.Director;
+            existingMovie.ReleaseDate = movieDto.ReleaseDate;
+            existingMovie.ImageUrl = movieDto.ImageUrl;
 
-            existingMovie.Tags = movie.Tags;
+            existingMovie.Tags = movieDto.Tags.Select(tagName => new Tag { Name = tagName }).ToList();
 
             _context.Movies.Update(existingMovie);
             await _context.SaveChangesAsync();

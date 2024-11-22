@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TheWarpZone.Data;
+using TheWarpZone.Common.DTOs;
 
 namespace TheWarpZone.Services.Interfaces
 {
     public interface IReviewService
     {
-        Task<IEnumerable<Review>> GetReviewsForMovieAsync(int movieId);
-        Task<IEnumerable<Review>> GetReviewsForTVShowAsync(int tvShowId);
-        Task AddReviewAsync(Review review);
-        Task UpdateReviewAsync(Review review);
+        Task<IEnumerable<ReviewDto>> GetReviewsForMovieAsync(int movieId);
+        Task<IEnumerable<ReviewDto>> GetReviewsForTVShowAsync(int tvShowId);
+        Task AddReviewAsync(ReviewDto reviewDto);
+        Task UpdateReviewAsync(ReviewDto reviewDto);
         Task DeleteReviewAsync(int id);
     }
 }

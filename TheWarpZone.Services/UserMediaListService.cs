@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
+using TheWarpZone.Data.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
@@ -16,53 +18,53 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<UserMediaList>> GetUserMediaListAsync(string userId)
+        public async Task<IEnumerable<UserMediaListDto>> GetUserMediaListAsync(string userId)
         {
-            return await _context.UserMediaLists
+            var mediaList = await _context.UserMediaLists
+                .Where(uml => uml.UserId == userId)
                 .Include(uml => uml.Movie)
                 .Include(uml => uml.TVShow)
-                .Where(uml => uml.UserId == userId)
                 .ToListAsync();
+
+            return mediaList.Select(UserMediaListMapper.ToDto).ToList();
         }
 
-        public async Task AddToUserMediaListAsync(UserMediaList userMediaList)
+        public async Task AddToUserMediaListAsync(UserMediaListDto userMediaListDto)
         {
-            var exists = await _context.UserMediaLists.AnyAsync(uml =>
-                uml.UserId == userMediaList.UserId &&
-                ((uml.MovieId.HasValue && uml.MovieId == userMediaList.MovieId) ||
-                 (uml.TVShowId.HasValue && uml.TVShowId == userMediaList.TVShowId)));
-
-            if (exists)
+            if (userMediaListDto == null)
             {
-                throw new InvalidOperationException("The media item is already in the user's list.");
+                throw new ArgumentNullException(nameof(userMediaListDto), "UserMediaList cannot be null.");
             }
 
-            await _context.UserMediaLists.AddAsync(userMediaList);
+            var entity = UserMediaListMapper.ToEntity(userMediaListDto);
+
+            await _context.UserMediaLists.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateMediaListStatusAsync(int id, MediaStatus status)
         {
-            var entry = await _context.UserMediaLists.FindAsync(id);
-            if (entry == null)
+            var existingMediaList = await _context.UserMediaLists.FindAsync(id);
+            if (existingMediaList == null)
             {
-                throw new KeyNotFoundException($"User media list entry with ID {id} not found.");
+                throw new KeyNotFoundException($"UserMediaList with ID {id} not found.");
             }
 
-            entry.Status = status;
-            _context.UserMediaLists.Update(entry);
+            existingMediaList.Status = status;
+
+            _context.UserMediaLists.Update(existingMediaList);
             await _context.SaveChangesAsync();
         }
 
         public async Task RemoveFromUserMediaListAsync(int id)
         {
-            var entry = await _context.UserMediaLists.FindAsync(id);
-            if (entry == null)
+            var mediaList = await _context.UserMediaLists.FindAsync(id);
+            if (mediaList == null)
             {
-                throw new KeyNotFoundException($"User media list entry with ID {id} not found.");
+                throw new KeyNotFoundException($"UserMediaList with ID {id} not found.");
             }
 
-            _context.UserMediaLists.Remove(entry);
+            _context.UserMediaLists.Remove(mediaList);
             await _context.SaveChangesAsync();
         }
     }

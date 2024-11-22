@@ -1,20 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TheWarpZone.Data;
+using TheWarpZone.Common.DTOs;
 
 namespace TheWarpZone.Services.Interfaces
 {
     public interface IMovieService
     {
-        Task<IEnumerable<Movie>> GetAllMoviesAsync();
-
-        Task<Movie> GetMovieDetailsAsync(int id);
-
-        Task AddMovieAsync(Movie movie);
-
-        Task UpdateMovieAsync(Movie movie);
-
+        Task<IEnumerable<MovieDto>> GetAllMoviesAsync();
+        Task<MovieDto> GetMovieDetailsAsync(int id);
+        Task AddMovieAsync(MovieDto movieDto);
+        Task UpdateMovieAsync(MovieDto movieDto);
         Task DeleteMovieAsync(int id);
-
     }
 }
