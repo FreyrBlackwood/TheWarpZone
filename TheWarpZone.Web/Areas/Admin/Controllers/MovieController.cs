@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using TheWarpZone.Common.DTOs;
-using TheWarpZone.Services;
 using TheWarpZone.Services.Interfaces;
 using TheWarpZone.Web.Areas.Admin.ViewModels;
 
@@ -23,9 +22,13 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string searchQuery, string sortBy, List<string> tags, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchQuery, string sortBy, string tags, int pageNumber = 1, int pageSize = 10)
         {
-            var paginatedMovies = await _movieService.GetMoviesAsync(pageNumber, pageSize, searchQuery, sortBy, tags);
+            List<string> tagList = string.IsNullOrEmpty(tags)
+                ? new List<string>()
+                : tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            var paginatedMovies = await _movieService.GetMoviesAsync(pageNumber, pageSize, searchQuery, sortBy, tagList);
 
             var allTags = await _tagService.GetAllTagsAsync();
             ViewBag.AvailableTags = allTags.Select(t => t.Name).ToList();
@@ -43,7 +46,7 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
             };
 
             ViewBag.SearchQuery = searchQuery;
-            ViewBag.Tags = tags;
+            ViewBag.Tags = tagList;
             ViewBag.SortBy = sortBy;
 
             return View(viewModel);
@@ -138,7 +141,7 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -147,4 +150,3 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         }
     }
 }
-

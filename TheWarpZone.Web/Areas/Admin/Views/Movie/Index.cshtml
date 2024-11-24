@@ -81,7 +81,7 @@
                             <a class="page-link" asp-action="Index" asp-route-pageNumber="@i"
                                asp-route-searchQuery="@ViewBag.SearchQuery"
                                asp-route-sortBy="@ViewBag.SortBy"
-                               asp-route-tags="@ViewBag.Tags">
+                               asp-route-tags="@string.Join(",", ViewBag.Tags as List<string>)">
                                 @i
                             </a>
                         </li>
