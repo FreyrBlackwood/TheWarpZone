@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheWarpZone.Common.DTOs;
@@ -18,14 +17,22 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<MovieDto>> GetAllMoviesAsync()
+        public async Task<PaginatedResultDto<MovieDto>> GetMoviesAsync(int pageNumber, int pageSize)
         {
+            var totalMovies = await _context.Movies.CountAsync();
+
             var movies = await _context.Movies
-                .Include(m => m.Tags)
-                .Include(m => m.Ratings)
+                .OrderBy(m => m.Title)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return movies.Select(MovieMapper.ToDto).ToList();
+            return new PaginatedResultDto<MovieDto>
+            {
+                Items = movies.Select(MovieMapper.ToDto).ToList(),
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling((double)totalMovies / pageSize)
+            };
         }
 
         public async Task<MovieDto> GetMovieDetailsAsync(int id)
@@ -49,12 +56,12 @@ namespace TheWarpZone.Services
         {
             if (movieDto == null)
             {
-                throw new ArgumentNullException(nameof(movieDto), "Movie cannot be null.");
+                throw new ArgumentNullException(nameof(movieDto), "Movie data cannot be null.");
             }
 
-            var movie = MovieMapper.ToEntity(movieDto);
+            var movieEntity = MovieMapper.ToEntity(movieDto);
 
-            await _context.Movies.AddAsync(movie);
+            await _context.Movies.AddAsync(movieEntity);
             await _context.SaveChangesAsync();
         }
 
@@ -62,7 +69,7 @@ namespace TheWarpZone.Services
         {
             if (movieDto == null)
             {
-                throw new ArgumentNullException(nameof(movieDto), "Movie cannot be null.");
+                throw new ArgumentNullException(nameof(movieDto), "Movie data cannot be null.");
             }
 
             var existingMovie = await _context.Movies.FindAsync(movieDto.Id);
@@ -76,8 +83,9 @@ namespace TheWarpZone.Services
             existingMovie.Director = movieDto.Director;
             existingMovie.ReleaseDate = movieDto.ReleaseDate;
             existingMovie.ImageUrl = movieDto.ImageUrl;
-
-            existingMovie.Tags = movieDto.Tags.Select(tagName => new Tag { Name = tagName }).ToList();
+            existingMovie.Tags = movieDto.Tags.Select(tagName =>
+                _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
+            ).ToList();
 
             _context.Movies.Update(existingMovie);
             await _context.SaveChangesAsync();

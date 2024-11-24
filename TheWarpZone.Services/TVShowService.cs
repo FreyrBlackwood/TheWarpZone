@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheWarpZone.Common.DTOs;
@@ -18,14 +17,22 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<TVShowDto>> GetAllTVShowsAsync()
+        public async Task<PaginatedResultDto<TVShowDto>> GetTVShowsAsync(int pageNumber, int pageSize)
         {
+            var totalTVShows = await _context.TVShows.CountAsync();
+
             var tvShows = await _context.TVShows
-                .Include(tv => tv.Tags)
-                .Include(tv => tv.Ratings)
+                .OrderBy(tv => tv.Title)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return tvShows.Select(TVShowMapper.ToDto).ToList();
+            return new PaginatedResultDto<TVShowDto>
+            {
+                Items = tvShows.Select(TVShowMapper.ToDto).ToList(),
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling((double)totalTVShows / pageSize)
+            };
         }
 
         public async Task<TVShowDto> GetTVShowDetailsAsync(int id)
@@ -33,14 +40,15 @@ namespace TheWarpZone.Services
             var tvShow = await _context.TVShows
                 .Include(tv => tv.Tags)
                 .Include(tv => tv.Ratings)
+                .Include(tv => tv.Reviews)
                 .Include(tv => tv.Seasons)
-                    .ThenInclude(s => s.Episodes)
+                    .ThenInclude(season => season.Episodes)
                 .Include(tv => tv.CastMembers)
                 .FirstOrDefaultAsync(tv => tv.Id == id);
 
             if (tvShow == null)
             {
-                throw new KeyNotFoundException($"TV Show with ID {id} not found.");
+                throw new KeyNotFoundException($"TV show with ID {id} not found.");
             }
 
             return TVShowMapper.ToDto(tvShow);
@@ -50,12 +58,12 @@ namespace TheWarpZone.Services
         {
             if (tvShowDto == null)
             {
-                throw new ArgumentNullException(nameof(tvShowDto), "TV Show cannot be null.");
+                throw new ArgumentNullException(nameof(tvShowDto), "TV show data cannot be null.");
             }
 
-            var tvShow = TVShowMapper.ToEntity(tvShowDto);
+            var tvShowEntity = TVShowMapper.ToEntity(tvShowDto);
 
-            await _context.TVShows.AddAsync(tvShow);
+            await _context.TVShows.AddAsync(tvShowEntity);
             await _context.SaveChangesAsync();
         }
 
@@ -63,13 +71,13 @@ namespace TheWarpZone.Services
         {
             if (tvShowDto == null)
             {
-                throw new ArgumentNullException(nameof(tvShowDto), "TV Show cannot be null.");
+                throw new ArgumentNullException(nameof(tvShowDto), "TV show data cannot be null.");
             }
 
             var existingTVShow = await _context.TVShows.FindAsync(tvShowDto.Id);
             if (existingTVShow == null)
             {
-                throw new KeyNotFoundException($"TV Show with ID {tvShowDto.Id} not found.");
+                throw new KeyNotFoundException($"TV show with ID {tvShowDto.Id} not found.");
             }
 
             existingTVShow.Title = tvShowDto.Title;
@@ -77,7 +85,9 @@ namespace TheWarpZone.Services
             existingTVShow.ReleaseDate = tvShowDto.ReleaseDate;
             existingTVShow.ImageUrl = tvShowDto.ImageUrl;
 
-            existingTVShow.Tags = tvShowDto.Tags.Select(tagName => new Tag { Name = tagName }).ToList();
+            existingTVShow.Tags = tvShowDto.Tags.Select(tagName =>
+                _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
+            ).ToList();
 
             _context.TVShows.Update(existingTVShow);
             await _context.SaveChangesAsync();
@@ -88,7 +98,7 @@ namespace TheWarpZone.Services
             var tvShow = await _context.TVShows.FindAsync(id);
             if (tvShow == null)
             {
-                throw new KeyNotFoundException($"TV Show with ID {id} not found.");
+                throw new KeyNotFoundException($"TV show with ID {id} not found.");
             }
 
             _context.TVShows.Remove(tvShow);

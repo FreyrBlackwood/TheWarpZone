@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheWarpZone.Common.DTOs;
@@ -18,24 +17,46 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<ReviewDto>> GetReviewsForMovieAsync(int movieId)
+        public async Task<PaginatedResultDto<ReviewDto>> GetPaginatedReviewsForMovieAsync(int movieId, int pageNumber, int pageSize)
         {
+            var totalReviews = await _context.Reviews
+                .Where(r => r.MovieId == movieId)
+                .CountAsync();
+
             var reviews = await _context.Reviews
                 .Where(r => r.MovieId == movieId)
-                .Include(r => r.User)
+                .OrderByDescending(r => r.PostedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return reviews.Select(ReviewMapper.ToDto).ToList();
+            return new PaginatedResultDto<ReviewDto>
+            {
+                Items = reviews.Select(ReviewMapper.ToDto).ToList(),
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling((double)totalReviews / pageSize)
+            };
         }
 
-        public async Task<IEnumerable<ReviewDto>> GetReviewsForTVShowAsync(int tvShowId)
+        public async Task<PaginatedResultDto<ReviewDto>> GetPaginatedReviewsForTVShowAsync(int tvShowId, int pageNumber, int pageSize)
         {
+            var totalReviews = await _context.Reviews
+                .Where(r => r.TVShowId == tvShowId)
+                .CountAsync();
+
             var reviews = await _context.Reviews
                 .Where(r => r.TVShowId == tvShowId)
-                .Include(r => r.User)
+                .OrderByDescending(r => r.PostedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return reviews.Select(ReviewMapper.ToDto).ToList();
+            return new PaginatedResultDto<ReviewDto>
+            {
+                Items = reviews.Select(ReviewMapper.ToDto).ToList(),
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling((double)totalReviews / pageSize)
+            };
         }
 
         public async Task AddReviewAsync(ReviewDto reviewDto)
@@ -45,9 +66,8 @@ namespace TheWarpZone.Services
                 throw new ArgumentNullException(nameof(reviewDto), "Review cannot be null.");
             }
 
-            var review = ReviewMapper.ToEntity(reviewDto);
-
-            await _context.Reviews.AddAsync(review);
+            var entity = ReviewMapper.ToEntity(reviewDto);
+            await _context.Reviews.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
@@ -65,7 +85,7 @@ namespace TheWarpZone.Services
             }
 
             existingReview.Comment = reviewDto.Comment;
-            existingReview.PostedDate = reviewDto.PostedDate;
+            existingReview.PostedDate = DateTime.UtcNow;
 
             _context.Reviews.Update(existingReview);
             await _context.SaveChangesAsync();
