@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using TheWarpZone.Services.Interfaces;
 using TheWarpZone.Services;
 using TheWarpZone.Data;
-using TheWarpZone.Web.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

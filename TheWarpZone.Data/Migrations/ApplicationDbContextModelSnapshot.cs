@@ -116,7 +116,7 @@ namespace TheWarpZone.Data.Migrations
 
                     b.HasIndex("TVShowId");
 
-                    b.ToTable("CastMembers");
+                    b.ToTable("CastMembers", (string)null);
                 });
 
             modelBuilder.Entity("Episode", b =>
@@ -364,7 +364,7 @@ namespace TheWarpZone.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Ratings");
+                    b.ToTable("Ratings", (string)null);
                 });
 
             modelBuilder.Entity("Review", b =>
@@ -487,7 +487,7 @@ namespace TheWarpZone.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("UserMediaList", b =>
