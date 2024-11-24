@@ -84,6 +84,12 @@ namespace TheWarpZone.Services
             }
 
             var movieEntity = MovieMapper.ToEntity(movieDto);
+            if (movieDto.Tags != null && movieDto.Tags.Any())
+            {
+                movieEntity.Tags = movieDto.Tags.Select(tagName =>
+                    _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
+                ).ToList();
+            }
 
             await _context.Movies.AddAsync(movieEntity);
             await _context.SaveChangesAsync();

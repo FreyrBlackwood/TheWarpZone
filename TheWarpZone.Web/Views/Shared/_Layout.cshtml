@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TheWarpZone.Web</title>
+    <title>@ViewData["Title"] - The Warp Zone</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TheWarpZone.Web.styles.css" asp-append-version="true" />
@@ -26,7 +26,14 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Movies" asp-action="Index">Movies</a>
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Movie" asp-action="Index">Movies</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="Index">Movies</a>
+                            }
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />

@@ -11,7 +11,7 @@ public class Movie
     public string Title { get; set; }
 
     [MaxLength(MovieConstraints.DescriptionMaxLength)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [Required]
     public DateTime ReleaseDate { get; set; }
@@ -21,7 +21,7 @@ public class Movie
     [MinLength(MovieConstraints.DirectorMinLength)]
     public string Director { get; set; }
 
-    public string ImageUrl { get; set; }
+    public string? ImageUrl { get; set; }
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
     public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();

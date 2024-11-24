@@ -5,9 +5,8 @@ public class Tag
 {
     public int Id { get; set; }
 
-    [Required]
     [MaxLength(TagConstraints.NameMaxLength)]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public ICollection<Movie> Movies { get; set; } = new List<Movie>();
     public ICollection<TVShow> TVShows { get; set; } = new List<TVShow>();

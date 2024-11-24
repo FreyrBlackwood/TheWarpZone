@@ -1,0 +1,93 @@
+﻿@using TheWarpZone.Web.Areas.Admin.ViewModels
+
+@model PaginatedResultViewModel<MovieGridViewModel>
+
+@{
+    ViewData["Title"] = "Manage Movies";
+}
+
+<h1>Manage Movies</h1>
+
+<div class="mb-3">
+    <a href="/Admin/Movie/Create" class="btn btn-primary">Add New Movie</a>
+
+</div>
+
+<div class="row">
+    <!-- Sidebar for Filters -->
+    <div class="col-md-4">
+        <form asp-action="Index" method="get">
+            <!-- Search Bar -->
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="searchQuery" value="@ViewBag.SearchQuery" placeholder="Search by Title">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Filter by Tags -->
+        <form asp-action="Index" method="get">
+            <h5>Filter by Tags</h5>
+            <div>
+                @if (ViewBag.AvailableTags != null)
+                {
+                    @foreach (var tag in ViewBag.AvailableTags as List<string>)
+                    {
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="tags" value="@tag" @(ViewBag.Tags?.Contains(tag) == true ? "checked" : "") />
+                            <label class="form-check-label">@tag</label>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No tags available.</p>
+                }
+            </div>
+            <button class="btn btn-secondary mt-2" type="submit">Apply Filters</button>
+        </form>
+    </div>
+
+    <!-- Main Content for Movie Grid -->
+    <div class="col-md-8">
+        <div class="row">
+            @if (Model.Items != null && Model.Items.Any())
+            {
+                @foreach (var movie in Model.Items)
+                {
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <img src="@movie.ImageUrl" class="card-img-top" alt="@movie.Title">
+                            <div class="card-body">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-primary btn-sm">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No movies found.</p>
+            }
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav>
+                <ul class="pagination">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-pageNumber="@i"
+                               asp-route-searchQuery="@ViewBag.SearchQuery"
+                               asp-route-sortBy="@ViewBag.SortBy"
+                               asp-route-tags="@ViewBag.Tags">
+                                @i
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>

@@ -1,0 +1,64 @@
+﻿@using TheWarpZone.Web.Areas.Admin.ViewModels
+
+@model MovieFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Movie";
+}
+
+<h1>Edit Movie</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <!-- Title -->
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Movie Title</label>
+        <input asp-for="Title" class="form-control" placeholder="Enter movie title" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Movie Description</label>
+        <textarea asp-for="Description" class="form-control" placeholder="Provide a brief description"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <!-- Director -->
+    <div class="mb-3">
+        <label asp-for="Director" class="form-label">Director</label>
+        <input asp-for="Director" class="form-control" placeholder="Enter the director's name" />
+        <span asp-validation-for="Director" class="text-danger"></span>
+    </div>
+
+    <!-- Release Date -->
+    <div class="mb-3">
+        <label asp-for="ReleaseDate" class="form-label">Release Date</label>
+        <input asp-for="ReleaseDate" type="date" class="form-control" />
+        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+    </div>
+
+    <!-- Image URL -->
+    <div class="mb-3">
+        <label asp-for="ImageUrl" class="form-label">Image URL</label>
+        <input asp-for="ImageUrl" class="form-control" placeholder="Provide the image URL" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <!-- Tags -->
+    <div class="mb-3">
+        <label asp-for="TagsString" class="form-label">Tags</label>
+        <input type="text" asp-for="TagsString" class="form-control" placeholder="Enter tags separated by commas (e.g., Sci-Fi, Action)" />
+        <span asp-validation-for="TagsString" class="text-danger"></span>
+    </div>
+
+    <!-- Buttons -->
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2/jquery.validate.unobtrusive.min.js"></script>
+}

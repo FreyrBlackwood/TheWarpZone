@@ -1,0 +1,17 @@
+﻿@using TheWarpZone.Web.Areas.Admin.ViewModels
+@model MovieDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete Movie";
+}
+
+<h1>Delete Movie</h1>
+
+<p>Are you sure you want to delete the movie <strong>@Model.Title</strong>?</p>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
