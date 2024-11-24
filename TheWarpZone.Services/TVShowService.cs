@@ -17,12 +17,36 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<PaginatedResultDto<TVShowDto>> GetTVShowsAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResultDto<TVShowDto>> GetTVShowsAsync(
+            int pageNumber,
+            int pageSize,
+            string searchQuery = null,
+            string sortBy = null,
+            List<string> tags = null)
         {
-            var totalTVShows = await _context.TVShows.CountAsync();
+            var query = _context.TVShows
+                .Include(tv => tv.Tags)
+                .AsQueryable();
 
-            var tvShows = await _context.TVShows
-                .OrderBy(tv => tv.Title)
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                query = query.Where(tv => tv.Title.Contains(searchQuery));
+            }
+
+            if (tags != null && tags.Any())
+            {
+                query = query.Where(tv => tv.Tags.Any(tag => tags.Contains(tag.Name)));
+            }
+
+            query = sortBy switch
+            {
+                "Title" => query.OrderBy(tv => tv.Title),
+                "ReleaseDate" => query.OrderByDescending(tv => tv.ReleaseDate),
+                _ => query.OrderBy(tv => tv.Title)
+            };
+
+            var totalTVShows = await query.CountAsync();
+            var tvShows = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -42,13 +66,12 @@ namespace TheWarpZone.Services
                 .Include(tv => tv.Ratings)
                 .Include(tv => tv.Reviews)
                 .Include(tv => tv.Seasons)
-                    .ThenInclude(season => season.Episodes)
-                .Include(tv => tv.CastMembers)
+                .ThenInclude(s => s.Episodes)
                 .FirstOrDefaultAsync(tv => tv.Id == id);
 
             if (tvShow == null)
             {
-                throw new KeyNotFoundException($"TV show with ID {id} not found.");
+                throw new KeyNotFoundException($"TV Show with ID {id} not found.");
             }
 
             return TVShowMapper.ToDto(tvShow);
@@ -58,7 +81,7 @@ namespace TheWarpZone.Services
         {
             if (tvShowDto == null)
             {
-                throw new ArgumentNullException(nameof(tvShowDto), "TV show data cannot be null.");
+                throw new ArgumentNullException(nameof(tvShowDto), "TV Show data cannot be null.");
             }
 
             var tvShowEntity = TVShowMapper.ToEntity(tvShowDto);
@@ -71,13 +94,13 @@ namespace TheWarpZone.Services
         {
             if (tvShowDto == null)
             {
-                throw new ArgumentNullException(nameof(tvShowDto), "TV show data cannot be null.");
+                throw new ArgumentNullException(nameof(tvShowDto), "TV Show data cannot be null.");
             }
 
             var existingTVShow = await _context.TVShows.FindAsync(tvShowDto.Id);
             if (existingTVShow == null)
             {
-                throw new KeyNotFoundException($"TV show with ID {tvShowDto.Id} not found.");
+                throw new KeyNotFoundException($"TV Show with ID {tvShowDto.Id} not found.");
             }
 
             existingTVShow.Title = tvShowDto.Title;
@@ -98,7 +121,7 @@ namespace TheWarpZone.Services
             var tvShow = await _context.TVShows.FindAsync(id);
             if (tvShow == null)
             {
-                throw new KeyNotFoundException($"TV show with ID {id} not found.");
+                throw new KeyNotFoundException($"TV Show with ID {id} not found.");
             }
 
             _context.TVShows.Remove(tvShow);

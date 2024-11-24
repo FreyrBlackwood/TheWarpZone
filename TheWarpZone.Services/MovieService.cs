@@ -17,12 +17,36 @@ namespace TheWarpZone.Services
             _context = context;
         }
 
-        public async Task<PaginatedResultDto<MovieDto>> GetMoviesAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResultDto<MovieDto>> GetMoviesAsync(
+            int pageNumber,
+            int pageSize,
+            string searchQuery = null,
+            string sortBy = null,
+            List<string> tags = null)
         {
-            var totalMovies = await _context.Movies.CountAsync();
+            var query = _context.Movies
+                .Include(m => m.Tags)
+                .AsQueryable();
 
-            var movies = await _context.Movies
-                .OrderBy(m => m.Title)
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                query = query.Where(m => m.Title.Contains(searchQuery));
+            }
+
+            if (tags != null && tags.Any())
+            {
+                query = query.Where(m => m.Tags.Any(tag => tags.Contains(tag.Name)));
+            }
+
+            query = sortBy switch
+            {
+                "Title" => query.OrderBy(m => m.Title),
+                "ReleaseDate" => query.OrderByDescending(m => m.ReleaseDate),
+                _ => query.OrderBy(m => m.Title)
+            };
+
+            var totalMovies = await query.CountAsync();
+            var movies = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -83,6 +107,7 @@ namespace TheWarpZone.Services
             existingMovie.Director = movieDto.Director;
             existingMovie.ReleaseDate = movieDto.ReleaseDate;
             existingMovie.ImageUrl = movieDto.ImageUrl;
+
             existingMovie.Tags = movieDto.Tags.Select(tagName =>
                 _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
             ).ToList();
