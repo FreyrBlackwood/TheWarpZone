@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using TheWarpZone.Common.DTOs;
 using TheWarpZone.Services.Interfaces;
 using TheWarpZone.Web.Areas.Admin.ViewModels;
+using TheWarpZone.Web.ViewModels.Shared;
+using TheWarpZone.Web.ViewModels.Shared.Movie;
 
 namespace TheWarpZone.Web.Areas.Admin.Controllers
 {

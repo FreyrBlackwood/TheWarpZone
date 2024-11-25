@@ -1,8 +1,6 @@
-﻿@using TheWarpZone.Web.Areas.Admin.ViewModels;
-@using TheWarpZone.Web.ViewModels.Shared
+﻿@using TheWarpZone.Web.ViewModels.Shared
 
 @model TheWarpZone.Web.ViewModels.Shared.Movie.MovieDetailsViewModel
-
 @{
     ViewData["Title"] = "Movie Details";
 }
@@ -26,8 +24,5 @@
                 <li>@tag</li>
             }
         </ul>
-
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
     </div>
 </div>

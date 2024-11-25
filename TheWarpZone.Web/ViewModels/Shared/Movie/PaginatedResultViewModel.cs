@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TheWarpZone.Web.Areas.Admin.ViewModels
+namespace TheWarpZone.Web.ViewModels.Shared.Movie
 {
     public class PaginatedResultViewModel<T>
     {

@@ -102,7 +102,10 @@ namespace TheWarpZone.Services
                 throw new ArgumentNullException(nameof(movieDto), "Movie data cannot be null.");
             }
 
-            var existingMovie = await _context.Movies.FindAsync(movieDto.Id);
+            var existingMovie = await _context.Movies
+                .Include(m => m.Tags)
+                .FirstOrDefaultAsync(m => m.Id == movieDto.Id);
+
             if (existingMovie == null)
             {
                 throw new KeyNotFoundException($"Movie with ID {movieDto.Id} not found.");
@@ -114,9 +117,30 @@ namespace TheWarpZone.Services
             existingMovie.ReleaseDate = movieDto.ReleaseDate;
             existingMovie.ImageUrl = movieDto.ImageUrl;
 
-            existingMovie.Tags = movieDto.Tags.Select(tagName =>
+            var newTags = movieDto.Tags?.Select(tagName =>
                 _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
             ).ToList();
+
+            if (newTags != null)
+            {
+                // Remove tags not in the new list
+                existingMovie.Tags = existingMovie.Tags
+                    .Where(tag => newTags.Any(newTag => newTag.Name == tag.Name))
+                    .ToList();
+
+                // Add new tags that aren't already associated
+                foreach (var newTag in newTags)
+                {
+                    if (!existingMovie.Tags.Any(existingTag => existingTag.Name == newTag.Name))
+                    {
+                        existingMovie.Tags.Add(newTag);
+                    }
+                }
+            }
+            else
+            {
+                existingMovie.Tags.Clear();
+            }
 
             _context.Movies.Update(existingMovie);
             await _context.SaveChangesAsync();
