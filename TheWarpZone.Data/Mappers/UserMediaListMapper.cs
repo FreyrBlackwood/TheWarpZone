@@ -12,7 +12,7 @@ namespace TheWarpZone.Data.Mappers
             return new UserMediaListDto
             {
                 Id = userMediaList.Id,
-                MediaTitle = userMediaList.Movie?.Title ?? userMediaList.TVShow?.Title,
+                MediaTitle = userMediaList.Movie?.Title ?? userMediaList.TVShow?.Title, // Safely get the title
                 Status = userMediaList.Status.ToString(), // Convert enum to string
                 MovieId = userMediaList.MovieId,
                 TVShowId = userMediaList.TVShowId,
@@ -27,7 +27,7 @@ namespace TheWarpZone.Data.Mappers
             return new UserMediaList
             {
                 Id = dto.Id,
-                Status = Enum.TryParse(dto.Status, out MediaStatus status) ? status : MediaStatus.ToWatch, // Parse string back to enum
+                Status = Enum.TryParse(dto.Status, true, out MediaStatus status) ? status : MediaStatus.ToWatch, // Safely parse enum
                 MovieId = dto.MovieId,
                 TVShowId = dto.TVShowId,
                 UserId = dto.UserId

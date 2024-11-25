@@ -18,12 +18,12 @@ public class UserMediaListConfiguration : IEntityTypeConfiguration<UserMediaList
         builder.HasOne(uml => uml.Movie)
                .WithMany()
                .HasForeignKey(uml => uml.MovieId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(uml => uml.TVShow)
                .WithMany()
                .HasForeignKey(uml => uml.TVShowId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(uml => uml.User)
                .WithMany()

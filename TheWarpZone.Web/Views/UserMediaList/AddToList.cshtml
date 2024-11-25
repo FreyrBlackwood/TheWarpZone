@@ -1,0 +1,47 @@
+﻿@using TheWarpZone.Web.ViewModels.Shared.MediaList
+@model MediaListFormViewModel
+
+@{
+    ViewData["Title"] = "Add to Watchlist";
+}
+
+<h1>Add to Watchlist</h1>
+
+<form asp-action="AddToList" method="post">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" placeholder="Enter the title" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label">Status</label>
+        <select asp-for="Status" class="form-select">
+            <option value="ToWatch">To Watch</option>
+            <option value="CurrentlyWatching">Currently Watching</option>
+            <option value="Watched">Watched</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MovieId" class="form-label">Movie ID (optional)</label>
+        <input asp-for="MovieId" class="form-control" />
+        <span asp-validation-for="MovieId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TVShowId" class="form-label">TV Show ID (optional)</label>
+        <input asp-for="TVShowId" class="form-control" />
+        <span asp-validation-for="TVShowId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2/jquery.validate.unobtrusive.min.js"></script>
+}

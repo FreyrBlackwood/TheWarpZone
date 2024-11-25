@@ -23,6 +23,28 @@
             {
                 <li>@tag</li>
             }
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form asp-controller="UserMediaList" asp-action="AddToList" method="post">
+                    <input type="hidden" name="MovieId" value="@Model.Id" />
+                    <input type="hidden" asp-for="Title" value="@Model.Title" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Movie", new { id = Model.Id })" />
+                    <div class="form-group">
+                        <label for="status">Add to Your List:</label>
+                        <select name="Status" class="form-control">
+                            <option value="ToWatch">To Watch</option>
+                            <option value="CurrentlyWatching">Currently Watching</option>
+                            <option value="Watched">Watched</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+                </form>
+
+            }
+            else
+            {
+                <p class="text-muted">Log in to add this movie to your watchlist.</p>
+            }
         </ul>
     </div>
 </div>

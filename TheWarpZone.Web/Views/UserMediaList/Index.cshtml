@@ -1,0 +1,53 @@
+﻿@using TheWarpZone.Web.ViewModels.Shared.MediaList
+@model UserMediaListViewModel
+
+@{
+    ViewData["Title"] = "My Watchlist";
+}
+
+<h1>My Watchlist</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.MediaItems.Any())
+        {
+            foreach (var item in Model.MediaItems)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Status</td>
+                    <td>
+                        <form asp-action="UpdateStatus" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <select name="newStatus" class="form-select form-select-sm d-inline" style="width: auto;">
+                                @foreach (var status in new[] { "ToWatch", "CurrentlyWatching", "Watched" })
+                                {
+                                    <option value="@status" selected="@(item.Status == status)">@status</option>
+                                }
+                            </select>
+
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                        <form asp-action="RemoveFromList" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" class="text-center">Your watchlist is empty.</td>
+            </tr>
+        }
+    </tbody>
+</table>
