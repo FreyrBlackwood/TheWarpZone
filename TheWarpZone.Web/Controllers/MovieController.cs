@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using TheWarpZone.Services;
 using TheWarpZone.Services.Interfaces;
 using TheWarpZone.Web.Areas.Admin.ViewModels;
 using TheWarpZone.Web.ViewModels;
@@ -12,10 +14,12 @@ namespace TheWarpZone.Web.Controllers
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
+        private readonly IRatingService _ratingService;
 
-        public MovieController(IMovieService movieService)
+        public MovieController(IMovieService movieService, IRatingService ratingService)
         {
             _movieService = movieService;
+            _ratingService = ratingService;
         }
 
         [HttpGet]
@@ -51,6 +55,17 @@ namespace TheWarpZone.Web.Controllers
                 return NotFound();
             }
 
+            var userId = User.Identity.IsAuthenticated
+                ? User.FindFirstValue(ClaimTypes.NameIdentifier)
+                : null;
+
+            var userRating = 0;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var ratingDto = await _ratingService.GetRatingForMovieAsync(userId, id);
+                userRating = ratingDto?.Value ?? 0;
+            }
+
             var viewModel = new MovieDetailsViewModel
             {
                 Id = movieDto.Id,
@@ -59,11 +74,14 @@ namespace TheWarpZone.Web.Controllers
                 Director = movieDto.Director,
                 ReleaseDate = movieDto.ReleaseDate,
                 ImageUrl = movieDto.ImageUrl,
+                AverageRating = movieDto.AverageRating,
                 Tags = movieDto.Tags,
-                AverageRating = movieDto.AverageRating
+                UserRating = userRating
             };
 
             return View(viewModel);
         }
+
+
     }
 }

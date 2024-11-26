@@ -69,6 +69,36 @@ namespace TheWarpZone.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteRatingAsync(string userId, int movieId, int? tvShowId)
+        {
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r =>
+                    r.UserId == userId &&
+                    (r.MovieId == movieId || (tvShowId.HasValue && r.TVShowId == tvShowId.Value)));
+
+            if (rating != null)
+            {
+                _context.Ratings.Remove(rating);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<RatingDto> GetRatingForMovieAsync(string userId, int movieId)
+        {
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.MovieId == movieId);
+
+            return RatingMapper.ToDto(rating);
+        }
+
+        public async Task<RatingDto> GetRatingForTVShowAsync(string userId, int tvShowId)
+        {
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.TVShowId == tvShowId);
+
+            return RatingMapper.ToDto(rating);
+        }
+
         public async Task<double> GetAverageRatingForMovieAsync(int movieId)
         {
             var ratings = await _context.Ratings

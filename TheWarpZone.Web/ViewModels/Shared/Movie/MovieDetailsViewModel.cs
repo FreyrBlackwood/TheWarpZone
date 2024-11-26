@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-
-namespace TheWarpZone.Web.ViewModels.Shared.Movie
+﻿namespace TheWarpZone.Web.ViewModels.Shared.Movie
 {
     public class MovieDetailsViewModel
     {
@@ -14,5 +10,7 @@ namespace TheWarpZone.Web.ViewModels.Shared.Movie
         public string ImageUrl { get; set; }
         public double AverageRating { get; set; }
         public List<string> Tags { get; set; } = new List<string>();
+
+        public int? UserRating { get; set; }
     }
 }

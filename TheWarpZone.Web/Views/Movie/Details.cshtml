@@ -1,6 +1,6 @@
-﻿@using TheWarpZone.Web.ViewModels.Shared
+﻿@using TheWarpZone.Web.ViewModels.Shared.Movie
+@model MovieDetailsViewModel
 
-@model TheWarpZone.Web.ViewModels.Shared.Movie.MovieDetailsViewModel
 @{
     ViewData["Title"] = "Movie Details";
 }
@@ -14,7 +14,7 @@
     <div class="col-md-8">
         <h4>Director: @Model.Director</h4>
         <h5>Release Date: @Model.ReleaseDate.ToShortDateString()</h5>
-        <h5>Average Rating: @Model.AverageRating</h5>
+        <h5>Average Rating: <span id="averageRating">@Model.AverageRating</span></h5>
         <p>@Model.Description</p>
 
         <h5>Tags:</h5>
@@ -23,28 +23,112 @@
             {
                 <li>@tag</li>
             }
-            @if (User.Identity.IsAuthenticated)
-            {
-                <form asp-controller="UserMediaList" asp-action="AddToList" method="post">
-                    <input type="hidden" name="MovieId" value="@Model.Id" />
-                    <input type="hidden" asp-for="Title" value="@Model.Title" />
-                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Movie", new { id = Model.Id })" />
-                    <div class="form-group">
-                        <label for="status">Add to Your List:</label>
-                        <select name="Status" class="form-control">
-                            <option value="ToWatch">To Watch</option>
-                            <option value="CurrentlyWatching">Currently Watching</option>
-                            <option value="Watched">Watched</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
-                </form>
-
-            }
-            else
-            {
-                <p class="text-muted">Log in to add this movie to your watchlist.</p>
-            }
         </ul>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <h5>Your Rating: <span id="userRating">@Model.UserRating</span></h5>
+            <form id="ratingForm" asp-controller="Rating" asp-action="AddOrUpdateRating" method="post">
+                <input type="hidden" name="mediaId" value="@Model.Id" />
+                <input type="hidden" name="mediaType" value="Movie" />
+
+                <div class="form-group">
+                    <label for="rating">Rate this Movie:</label>
+                    <select name="ratingValue" class="form-control" id="rating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (Model.UserRating == i)
+                            {
+                                <option value="@i" selected>@i</option>
+                            }
+                            else
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Rating</button>
+            </form>
+
+            @if (Model.UserRating > 0)
+            {
+                <form id="removeRatingForm" asp-controller="Rating" asp-action="DeleteRating" method="post">
+                    <input type="hidden" name="mediaId" value="@Model.Id" />
+                    <input type="hidden" name="mediaType" value="Movie" />
+                    <button type="submit" class="btn btn-danger mt-2">Remove Rating</button>
+                </form>
+            }
+
+            <h5>Add to Your Watchlist:</h5>
+            <form asp-controller="UserMediaList" asp-action="AddToList" method="post">
+                <input type="hidden" name="MovieId" value="@Model.Id" />
+                <input type="hidden" name="Title" value="@Model.Title" />
+                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Movie", new { id = Model.Id })" />
+
+                <div class="form-group">
+                    <select name="Status" class="form-control">
+                        <option value="ToWatch">To Watch</option>
+                        <option value="CurrentlyWatching">Currently Watching</option>
+                        <option value="Watched">Watched</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+            </form>
+        }
+        else
+        {
+            <p class="text-muted">Log in to rate this movie or add it to your watchlist.</p>
+        }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById("ratingForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: this.method,
+                body: formData,
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById("averageRating").innerText = data.newAverageRating;
+                    document.getElementById("userRating").innerText = formData.get("ratingValue");
+                    location.reload();
+                } else {
+                    alert(data.message || "An error occurred.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+        document.getElementById("removeRatingForm")?.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: this.method,
+                body: formData,
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById("averageRating").innerText = data.newAverageRating;
+                    document.getElementById("userRating").innerText = "N/A";
+                    location.reload();
+                } else {
+                    alert(data.message || "An error occurred.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+}
