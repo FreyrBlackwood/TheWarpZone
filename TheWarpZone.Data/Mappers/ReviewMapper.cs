@@ -1,4 +1,5 @@
-﻿using TheWarpZone.Common.DTOs;
+﻿using System;
+using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
 
 namespace TheWarpZone.Data.Mappers
@@ -14,25 +15,27 @@ namespace TheWarpZone.Data.Mappers
                 Id = review.Id,
                 Comment = review.Comment,
                 PostedDate = review.PostedDate,
+                UpdatedAt = review.UpdatedAt,
                 UserId = review.UserId,
-                UserName = review.User?.UserName,
+                Email = review.User?.Email,
                 MovieId = review.MovieId,
                 TVShowId = review.TVShowId
             };
         }
 
-        public static Review ToEntity(ReviewDto dto)
+        public static Review ToEntity(ReviewDto reviewDto)
         {
-            if (dto == null) return null;
+            if (reviewDto == null) return null;
 
             return new Review
             {
-                Id = dto.Id,
-                Comment = dto.Comment,
-                PostedDate = dto.PostedDate,
-                UserId = dto.UserId,
-                MovieId = dto.MovieId,
-                TVShowId = dto.TVShowId
+                Id = reviewDto.Id,
+                Comment = reviewDto.Comment,
+                PostedDate = reviewDto.PostedDate,
+                UpdatedAt = reviewDto.UpdatedAt,
+                UserId = reviewDto.UserId,
+                MovieId = reviewDto.MovieId,
+                TVShowId = reviewDto.TVShowId
             };
         }
     }

@@ -81,6 +81,10 @@
             <p class="text-muted">Log in to rate this movie or add it to your watchlist.</p>
         }
     </div>
+    <div>
+        <a asp-controller="Review" asp-action="Index" asp-route-movieId="@Model.Id" class="btn btn-secondary">View All Reviews</a>
+    </div>
+
 </div>
 
 @section Scripts {

@@ -1,4 +1,5 @@
-﻿namespace TheWarpZone.Web.ViewModels.Shared.Movie
+﻿
+namespace TheWarpZone.Web.ViewModels.Shared.Movie
 {
     public class MovieDetailsViewModel
     {
@@ -12,5 +13,6 @@
         public List<string> Tags { get; set; } = new List<string>();
 
         public int? UserRating { get; set; }
+
     }
 }

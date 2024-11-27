@@ -1,0 +1,15 @@
+﻿@model TheWarpZone.Web.ViewModels.Review.ReviewFormViewModel
+
+<h2>Edit Review</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="MovieId" value="@Model.MovieId" />
+    <div class="form-group">
+        <label for="Comment">Comment</label>
+        <textarea name="Comment" class="form-control" rows="5">@Model.Comment</textarea>
+        <span asp-validation-for="Comment" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" asp-route-movieId="@Model.MovieId" class="btn btn-secondary">Cancel</a>
+</form>
