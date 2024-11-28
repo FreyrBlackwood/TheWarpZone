@@ -81,7 +81,7 @@
         {
             <p class="text-muted">Log in to rate this TV Show or add it to your watchlist.</p>
         }
-
+        <a asp-controller="EpisodeList" asp-action="Index" asp-route-tvShowId="@Model.Id" class="btn btn-primary">View Episodes</a>
         <a asp-action="Index" class="btn btn-secondary">Back to TV Shows</a>
         <div>
             <a asp-controller="Review" asp-action="IndexForTVShow" asp-route-tvShowId="@Model.Id" class="btn btn-secondary">View All Reviews</a>

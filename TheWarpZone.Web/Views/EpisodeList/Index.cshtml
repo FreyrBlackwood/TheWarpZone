@@ -1,0 +1,57 @@
+﻿@model TheWarpZone.Web.ViewModels.Shared.EpisodeList.EpisodeListViewModel
+
+@{
+    ViewData["Title"] = "Episode List";
+}
+
+<h1>Episode List for @Model.TVShowTitle</h1>
+
+<div class="mb-3">
+    <a asp-controller="TVShow" asp-action="Details" asp-route-id="@Model.TVShowId" class="btn btn-secondary">Back to TV Show</a>
+</div>
+
+<hr />
+
+@if (Model.Seasons.Any())
+{
+    @foreach (var season in Model.Seasons)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5>
+                    <a data-bs-toggle="collapse" href="#season-@season.Id" role="button" aria-expanded="false" aria-controls="season-@season.Id">
+                        Season @season.SeasonNumber: @season.Title
+                    </a>
+                </h5>
+            </div>
+            <div id="season-@season.Id" class="collapse">
+                @if (season.Episodes.Any())
+                {
+                    <table class="table">
+                        <tbody>
+                        @foreach (var episode in season.Episodes.OrderBy(e => e.EpisodeNumber))
+                        {
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Episode @episode.EpisodeNumber: @episode.Title</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">@episode.Description</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No episodes available for this season.</p>
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted">No seasons available for this TV show.</p>
+}

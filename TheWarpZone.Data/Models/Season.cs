@@ -9,6 +9,9 @@ public class Season
     [Range(SeasonConstraints.SeasonNumberMin, int.MaxValue)]
     public int SeasonNumber { get; set; }
 
+    [MaxLength(200)]
+    public string? Title { get; set; }
+
     public ICollection<Episode> Episodes { get; set; } = new List<Episode>();
 
     public int TVShowId { get; set; }

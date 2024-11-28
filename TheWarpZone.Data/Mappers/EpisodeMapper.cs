@@ -14,7 +14,8 @@ namespace TheWarpZone.Data.Mappers
                 Id = episode.Id,
                 EpisodeNumber = episode.EpisodeNumber,
                 Title = episode.Title,
-                Description = episode.EpisodeDescription
+                Description = episode.EpisodeDescription,
+                SeasonId = episode.SeasonId
             };
         }
 
@@ -27,7 +28,8 @@ namespace TheWarpZone.Data.Mappers
                 Id = dto.Id,
                 EpisodeNumber = dto.EpisodeNumber,
                 Title = dto.Title,
-                EpisodeDescription = dto.Description
+                EpisodeDescription = dto.Description,
+                SeasonId = dto.SeasonId
             };
         }
     }

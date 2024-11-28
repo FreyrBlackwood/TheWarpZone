@@ -1,0 +1,28 @@
+﻿@model TheWarpZone.Web.Areas.Admin.ViewModels.EpisodeList.SeasonFormViewModel
+
+@{
+    ViewData["Title"] = "Add Season";
+}
+
+<<h2>Add Season</h2>
+
+<form asp-action="AddSeason" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="TVShowId" value="@Model.TVShowId" />
+
+    <div class="mb-3">
+        <label asp-for="SeasonNumber" class="form-label"></label>
+        <input asp-for="SeasonNumber" class="form-control" />
+        <span asp-validation-for="SeasonNumber" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add</button>
+    <a asp-action="Index" asp-route-tvShowId="@Model.TVShowId" class="btn btn-secondary">Cancel</a>
+</form>

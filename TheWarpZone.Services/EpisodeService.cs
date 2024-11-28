@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheWarpZone.Common.DTOs;
@@ -47,6 +46,11 @@ namespace TheWarpZone.Services
                 throw new ArgumentNullException(nameof(episodeDto), "Episode cannot be null.");
             }
 
+            if (!await IsEpisodeNumberUniqueAsync(episodeDto.SeasonId, episodeDto.EpisodeNumber))
+            {
+                throw new InvalidOperationException($"Episode number {episodeDto.EpisodeNumber} already exists in the season.");
+            }
+
             var episode = EpisodeMapper.ToEntity(episodeDto);
 
             await _context.Episodes.AddAsync(episode);
@@ -64,6 +68,11 @@ namespace TheWarpZone.Services
             if (existingEpisode == null)
             {
                 throw new KeyNotFoundException($"Episode with ID {episodeDto.Id} not found.");
+            }
+
+            if (!await IsEpisodeNumberUniqueAsync(episodeDto.SeasonId, episodeDto.EpisodeNumber, episodeDto.Id))
+            {
+                throw new InvalidOperationException($"Episode number {episodeDto.EpisodeNumber} already exists in the season.");
             }
 
             existingEpisode.Title = episodeDto.Title;
@@ -84,6 +93,12 @@ namespace TheWarpZone.Services
 
             _context.Episodes.Remove(episode);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsEpisodeNumberUniqueAsync(int seasonId, int episodeNumber, int? episodeId = null)
+        {
+            return !await _context.Episodes
+                .AnyAsync(e => e.SeasonId == seasonId && e.EpisodeNumber == episodeNumber && e.Id != episodeId);
         }
     }
 }

@@ -11,5 +11,6 @@ namespace TheWarpZone.Services.Interfaces
         Task AddEpisodeAsync(EpisodeDto episodeDto);
         Task UpdateEpisodeAsync(EpisodeDto episodeDto);
         Task DeleteEpisodeAsync(int id);
+        Task<bool> IsEpisodeNumberUniqueAsync(int seasonId, int episodeNumber, int? episodeId = null);
     }
 }

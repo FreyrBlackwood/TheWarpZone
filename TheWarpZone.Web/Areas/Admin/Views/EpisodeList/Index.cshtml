@@ -1,0 +1,89 @@
+﻿@model TheWarpZone.Web.ViewModels.Shared.EpisodeList.EpisodeListViewModel
+
+@{
+    ViewData["Title"] = "Manage Episodes";
+}
+
+<h1>Manage Episodes for @Model.TVShowTitle</h1>
+
+<div class="mb-3">
+    <a asp-controller="TVShow" asp-action="Details" asp-route-id="@Model.TVShowId" class="btn btn-secondary">Back to TV Show</a>
+</div>
+
+<hr />
+
+@if (Model.Seasons.Any())
+{
+    @foreach (var season in Model.Seasons.OrderBy(s => s.SeasonNumber))
+    {
+        var isExpanded = Model.ExpandedSeasonId == season.Id;
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5>
+                    <a data-bs-toggle="collapse" href="#season-@season.Id" role="button" aria-expanded="@isExpanded.ToString().ToLower()" aria-controls="season-@season.Id">
+                        Season @season.SeasonNumber: @season.Title
+                    </a>
+                </h5>
+                <div class="float-end">
+                    <a asp-action="EditSeason" asp-route-id="@season.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="DeleteSeason" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@season.Id" />
+                        <input type="hidden" name="tvShowId" value="@Model.TVShowId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete Season</button>
+                    </form>
+                </div>
+            </div>
+            <div id="season-@season.Id" class="collapse @(isExpanded ? "show" : "")">
+                <div class="mt-3">
+                    <a asp-action="AddEpisode" asp-route-seasonId="@season.Id" asp-route-tvShowId="@Model.TVShowId" class="btn btn-primary btn-sm mb-2">Add Episode</a>
+                </div>
+                @if (season.Episodes.Any())
+                {
+                    <table class="table">
+                        <tbody>
+                            @foreach (var episode in season.Episodes.OrderBy(e => e.EpisodeNumber))
+                            {
+                                <tr>
+                                    <td colspan="2">
+                                        <strong>Episode @episode.EpisodeNumber: @episode.Title</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">@episode.Description</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a asp-action="EditEpisode" asp-route-id="@episode.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    </td>
+                                    <td>
+                                        <form asp-action="DeleteEpisode" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@episode.Id" />
+                                            <input type="hidden" name="tvShowId" value="@Model.TVShowId" />
+                                            <input type="hidden" name="seasonId" value="@season.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No episodes available for this season.</p>
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted">No seasons available for this TV show.</p>
+}
+
+<div class="mt-3">
+    <a asp-action="AddSeason" asp-route-tvShowId="@Model.TVShowId" class="btn btn-primary">Add Season</a>
+</div>

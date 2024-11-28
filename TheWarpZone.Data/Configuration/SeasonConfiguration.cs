@@ -13,6 +13,9 @@ public class SeasonConfiguration : IEntityTypeConfiguration<Season>
         builder.Property(s => s.SeasonNumber)
                .IsRequired();
 
+        builder.Property(s => s.Title)
+            .HasMaxLength(200);
+
         builder.HasMany(s => s.Episodes)
                .WithOne(e => e.Season)
                .HasForeignKey(e => e.SeasonId)

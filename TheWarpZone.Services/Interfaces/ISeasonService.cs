@@ -10,5 +10,8 @@ namespace TheWarpZone.Services.Interfaces
         Task AddSeasonAsync(SeasonDto seasonDto);
         Task UpdateSeasonAsync(SeasonDto seasonDto);
         Task DeleteSeasonAsync(int id);
+        Task<bool> IsSeasonNumberUniqueAsync(int tvShowId, int seasonNumber, int? seasonId = null);
+        Task<SeasonDto> GetSeasonByIdAsync(int seasonId);
+
     }
 }

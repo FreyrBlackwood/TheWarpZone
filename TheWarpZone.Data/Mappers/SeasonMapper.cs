@@ -13,7 +13,9 @@ namespace TheWarpZone.Data.Mappers
             {
                 Id = season.Id,
                 SeasonNumber = season.SeasonNumber,
-                Episodes = season.Episodes?.Select(EpisodeMapper.ToDto).ToList() ?? new List<EpisodeDto>()
+                Title = season.Title,
+                Episodes = season.Episodes?.Select(EpisodeMapper.ToDto).ToList() ?? new List<EpisodeDto>(),
+                TVShowId = season.TVShowId
             };
         }
 
@@ -24,7 +26,10 @@ namespace TheWarpZone.Data.Mappers
             return new Season
             {
                 Id = dto.Id,
-                SeasonNumber = dto.SeasonNumber
+                SeasonNumber = dto.SeasonNumber,
+                Title = dto.Title,
+                Episodes = dto.Episodes?.Select(EpisodeMapper.ToEntity).ToList(),
+                TVShowId = dto.TVShowId
             };
         }
     }
