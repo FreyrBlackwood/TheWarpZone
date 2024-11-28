@@ -1,8 +1,8 @@
-﻿@using TheWarpZone.Web.ViewModels.Shared.Movie
-@model MovieDetailsViewModel
+﻿@using TheWarpZone.Web.ViewModels.Shared.TVShow
+@model TVShowDetailsViewModel
 
 @{
-    ViewData["Title"] = "Movie Details";
+    ViewData["Title"] = "TV Show Details";
 }
 
 <h1>@Model.Title</h1>
@@ -12,9 +12,7 @@
         <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid">
     </div>
     <div class="col-md-8">
-        <h4>Director: @Model.Director</h4>
-        <h5>Release Date: @Model.ReleaseDate.ToShortDateString()</h5>
-        <h5>Average Rating: <span id="averageRating">@Model.AverageRating</span></h5>
+        <h4>Release Date: @Model.ReleaseDate.ToShortDateString()</h4>
         <p>@Model.Description</p>
 
         <h5>Tags:</h5>
@@ -25,15 +23,17 @@
             }
         </ul>
 
+        <h5>Average Rating: <span id="averageRating">@Model.AverageRating</span></h5>
+
         @if (User.Identity.IsAuthenticated)
         {
             <h5>Your Rating: <span id="userRating">@Model.UserRating</span></h5>
             <form id="ratingForm" asp-controller="Rating" asp-action="AddOrUpdateRating" method="post">
                 <input type="hidden" name="mediaId" value="@Model.Id" />
-                <input type="hidden" name="mediaType" value="Movie" />
+                <input type="hidden" name="mediaType" value="TVShow" />
 
                 <div class="form-group">
-                    <label for="rating">Rate this Movie:</label>
+                    <label for="rating">Rate this TV Show:</label>
                     <select name="ratingValue" class="form-control" id="rating">
                         @for (int i = 1; i <= 5; i++)
                         {
@@ -55,37 +55,39 @@
             {
                 <form id="removeRatingForm" asp-controller="Rating" asp-action="DeleteRating" method="post">
                     <input type="hidden" name="mediaId" value="@Model.Id" />
-                    <input type="hidden" name="mediaType" value="Movie" />
+                    <input type="hidden" name="mediaType" value="TVShow" />
                     <button type="submit" class="btn btn-danger mt-2">Remove Rating</button>
                 </form>
             }
 
-            <h5>Add to Your Watchlist:</h5>
-            <form asp-controller="UserMediaList" asp-action="AddToList" method="post">
-                <input type="hidden" name="MovieId" value="@Model.Id" />
-                <input type="hidden" name="Title" value="@Model.Title" />
-                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Movie", new { id = Model.Id })" />
+                <h5>Add to Your Watchlist:</h5>
+                <form asp-controller="UserMediaList" asp-action="AddToList" method="post">
+                    <input type="hidden" name="TVShowId" value="@Model.Id" />
+                    <input type="hidden" name="Title" value="@Model.Title" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", "TVShow", new { id = Model.Id })" />
 
-                <div class="form-group">
-                    <select name="Status" class="form-control">
-                        <option value="ToWatch">To Watch</option>
-                        <option value="CurrentlyWatching">Currently Watching</option>
-                        <option value="Watched">Watched</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Add to Watchlist</button>
-            </form>
+                    <div class="form-group">
+                        <select name="Status" class="form-control">
+                            <option value="ToWatch">To Watch</option>
+                            <option value="CurrentlyWatching">Currently Watching</option>
+                            <option value="Watched">Watched</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+                </form>
+
         }
         else
         {
-            <p class="text-muted">Log in to rate this movie or add it to your watchlist.</p>
+            <p class="text-muted">Log in to rate this TV Show or add it to your watchlist.</p>
         }
-        <a asp-action="Index" class="btn btn-secondary">Back to Movies</a>
-    </div>
-    <div>
-        <a asp-controller="Review" asp-action="Index" asp-route-movieId="@Model.Id" class="btn btn-secondary">View All Reviews</a>
-    </div>
 
+        <a asp-action="Index" class="btn btn-secondary">Back to TV Shows</a>
+        <div>
+            <a asp-controller="Review" asp-action="IndexForTVShow" asp-route-tvShowId="@Model.Id" class="btn btn-secondary">View All Reviews</a>
+        </div>
+
+    </div>
 </div>
 
 @section Scripts {

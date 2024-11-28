@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,17 +16,26 @@ namespace TheWarpZone.Web.Controllers
     {
         private readonly IMovieService _movieService;
         private readonly IRatingService _ratingService;
+        private readonly ITagService _tagService;
 
-        public MovieController(IMovieService movieService, IRatingService ratingService)
+        public MovieController(IMovieService movieService, IRatingService ratingService, ITagService tagService)
         {
             _movieService = movieService;
             _ratingService = ratingService;
+            _tagService = tagService;   
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string searchQuery, string sortBy, List<string> tags, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchQuery, string sortBy, string tags, int pageNumber = 1, int pageSize = 10)
         {
-            var paginatedMovies = await _movieService.GetMoviesAsync(pageNumber, pageSize, searchQuery, sortBy, tags);
+            var tagList = string.IsNullOrEmpty(tags)
+                ? new List<string>()
+                : tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            var paginatedMovies = await _movieService.GetMoviesAsync(pageNumber, pageSize, searchQuery, sortBy, tagList);
+
+            var movieTags = await _tagService.GetAllTagsForMoviesAsync();
+            ViewBag.AvailableTags = movieTags;
 
             var viewModel = new PaginatedResultViewModel<MovieGridViewModel>
             {
@@ -40,7 +50,7 @@ namespace TheWarpZone.Web.Controllers
             };
 
             ViewBag.SearchQuery = searchQuery;
-            ViewBag.Tags = tags;
+            ViewBag.Tags = tagList;
             ViewBag.SortBy = sortBy;
 
             return View(viewModel);

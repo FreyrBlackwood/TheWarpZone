@@ -49,7 +49,6 @@ namespace TheWarpZone.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToList(MediaListFormViewModel model, string returnUrl = null)
         {
-          
             if (ModelState.IsValid)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -75,12 +74,20 @@ namespace TheWarpZone.Web.Controllers
                     return Redirect(returnUrl);
                 }
 
+                if (model.MovieId.HasValue)
+                {
+                    return RedirectToAction("Index", "Movie");
+                }
+                else if (model.TVShowId.HasValue)
+                {
+                    return RedirectToAction("Index", "TVShow");
+                }
+
                 return RedirectToAction(nameof(Index));
             }
 
             return RedirectToAction("Index", "Movie");
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -102,7 +109,6 @@ namespace TheWarpZone.Web.Controllers
             await _userMediaListService.RemoveFromUserMediaListAsync(id);
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

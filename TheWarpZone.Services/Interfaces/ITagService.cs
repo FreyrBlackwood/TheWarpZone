@@ -7,10 +7,10 @@ namespace TheWarpZone.Services.Interfaces
     public interface ITagService
     {
         Task<IEnumerable<TagDto>> GetAllTagsAsync();
+        Task<IEnumerable<string>> GetAllTagsForMoviesAsync();
+        Task<IEnumerable<string>> GetAllTagsForTVShowsAsync();
         Task<TagDto> GetTagByIdAsync(int id);
         Task AddTagAsync(TagDto tagDto);
         Task DeleteTagAsync(int id);
-        Task<IEnumerable<MovieDto>> GetMoviesByTagAsync(int tagId);
-        Task<IEnumerable<TVShowDto>> GetTVShowsByTagAsync(int tagId);
     }
 }

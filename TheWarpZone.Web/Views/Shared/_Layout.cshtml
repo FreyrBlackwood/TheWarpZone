@@ -36,6 +36,16 @@
                             }
                         </li>
                         <li class="nav-item">
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="TVShow" asp-action="Index">TV Shows</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="TVShow" asp-action="Index">TV Shows</a>
+                            }
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="UserMediaList" asp-action="Index">My Watchlist</a>
                         </li>
 

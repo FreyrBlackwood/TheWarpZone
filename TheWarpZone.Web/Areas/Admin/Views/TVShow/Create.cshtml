@@ -1,14 +1,14 @@
-﻿
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model TheWarpZone.Web.Areas.Admin.ViewModels.Movie.MovieFormViewModel
+﻿@model TheWarpZone.Web.Areas.Admin.ViewModels.TVShow.TVShowFormViewModel
 
 @{
-    ViewData["Title"] = "Add Movie";
+    ViewData["Title"] = "Add TV Show";
 }
 
-<h1>Add Movie</h1>
+<h1>Add TV Show</h1>
 
 <form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
     <div class="mb-3">
         <label asp-for="Title" class="form-label">Title</label>
         <input asp-for="Title" class="form-control" />
@@ -19,12 +19,6 @@
         <label asp-for="Description" class="form-label">Description</label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Director" class="form-label">Director</label>
-        <input asp-for="Director" class="form-control" />
-        <span asp-validation-for="Director" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
@@ -41,13 +35,11 @@
 
     <div class="mb-3">
         <label asp-for="TagsString" class="form-label">Tags</label>
-        <input type="text" asp-for="TagsString" class="form-control" placeholder="E.g., Sci-Fi, Action" />
+        <input type="text" asp-for="TagsString" class="form-control" placeholder="E.g., Drama, Action" />
         <span asp-validation-for="TagsString" class="text-danger"></span>
     </div>
 
-
-
-    <button type="submit" class="btn btn-primary">Add</button>
+    <button type="submit" class="btn btn-primary">Add TV Show</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
 

@@ -2,15 +2,15 @@
 
 <h2>Edit Review</h2>
 
-<form asp-action="Edit" method="post">
+<form asp-action="EditForTVShow" method="post">
     <input type="hidden" name="Id" value="@Model.Id" />
-    <input type="hidden" name="TVShowId" value="0" />
-    <input type="hidden" name="MovieId" value="@Model.MovieId" />
+    <input type="hidden" name="TVShowId" value="@Model.TVShowId" />
+    <input type="hidden" name="MovieId" value="0" />
     <div class="form-group">
         <label for="Comment">Comment</label>
         <textarea name="Comment" class="form-control" rows="5">@Model.Comment</textarea>
         <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Update</button>
-    <a asp-action="Index" asp-route-movieId="@Model.MovieId" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="IndexForTVShow" asp-route-tvShowId="@Model.TVShowId" class="btn btn-secondary">Cancel</a>
 </form>

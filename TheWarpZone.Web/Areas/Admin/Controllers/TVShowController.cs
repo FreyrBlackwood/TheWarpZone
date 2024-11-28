@@ -4,23 +4,23 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TheWarpZone.Services.Interfaces;
-using TheWarpZone.Web.Areas.Admin.ViewModels.Movie;
+using TheWarpZone.Web.Areas.Admin.ViewModels.TVShow;
 using TheWarpZone.Web.ViewModels.Shared;
-using TheWarpZone.Web.ViewModels.Shared.Movie;
+using TheWarpZone.Web.ViewModels.Shared.TVShow;
 
 namespace TheWarpZone.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Administrator")]
-    public class MovieController : Controller
+    public class TVShowController : Controller
     {
-        private readonly IMovieService _movieService;
+        private readonly ITVShowService _tvShowService;
         private readonly ITagService _tagService;
         private readonly IRatingService _ratingService;
 
-        public MovieController(IMovieService movieService, ITagService tagService, IRatingService ratingService)
+        public TVShowController(ITVShowService tvShowService, ITagService tagService, IRatingService ratingService)
         {
-            _movieService = movieService;
+            _tvShowService = tvShowService;
             _tagService = tagService;
             _ratingService = ratingService;
         }
@@ -32,21 +32,21 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
                 ? new List<string>()
                 : tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            var paginatedMovies = await _movieService.GetMoviesAsync(pageNumber, pageSize, searchQuery, sortBy, tagList);
+            var paginatedTVShows = await _tvShowService.GetTVShowsAsync(pageNumber, pageSize, searchQuery, sortBy, tagList);
 
-            var movieTags = await _tagService.GetAllTagsForMoviesAsync();
-            ViewBag.AvailableTags = movieTags;
+            var tvShowTags = await _tagService.GetAllTagsForTVShowsAsync();
+            ViewBag.AvailableTags = tvShowTags;
 
-            var viewModel = new PaginatedResultViewModel<MovieGridViewModel>
+            var viewModel = new PaginatedResultViewModel<TVShowGridViewModel>
             {
-                Items = paginatedMovies.Items.Select(dto => new MovieGridViewModel
+                Items = paginatedTVShows.Items.Select(dto => new TVShowGridViewModel
                 {
                     Id = dto.Id,
                     Title = dto.Title,
                     ImageUrl = dto.ImageUrl
                 }).ToList(),
-                CurrentPage = paginatedMovies.CurrentPage,
-                TotalPages = paginatedMovies.TotalPages
+                CurrentPage = paginatedTVShows.CurrentPage,
+                TotalPages = paginatedTVShows.TotalPages
             };
 
             ViewBag.SearchQuery = searchQuery;
@@ -59,8 +59,8 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var movieDto = await _movieService.GetMovieDetailsAsync(id);
-            if (movieDto == null)
+            var tvShowDto = await _tvShowService.GetTVShowDetailsAsync(id);
+            if (tvShowDto == null)
             {
                 return NotFound();
             }
@@ -70,19 +70,19 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
                 : null;
 
             var userRating = userId != null
-                ? await _ratingService.GetRatingForMovieAsync(userId, id)
+                ? await _ratingService.GetRatingForTVShowAsync(userId, id)
                 : null;
 
-            var averageRating = await _ratingService.GetAverageRatingForMovieAsync(id);
+            var averageRating = await _ratingService.GetAverageRatingForTVShowAsync(id);
 
-            var viewModel = new MovieDetailsViewModel
+            var viewModel = new TVShowDetailsViewModel
             {
-                Id = movieDto.Id,
-                Title = movieDto.Title,
-                Description = movieDto.Description,
-                ReleaseDate = movieDto.ReleaseDate,
-                ImageUrl = movieDto.ImageUrl,
-                Tags = movieDto.Tags,
+                Id = tvShowDto.Id,
+                Title = tvShowDto.Title,
+                Description = tvShowDto.Description,
+                ReleaseDate = tvShowDto.ReleaseDate,
+                ImageUrl = tvShowDto.ImageUrl,
+                Tags = tvShowDto.Tags,
                 UserRating = userRating?.Value ?? 0,
                 AverageRating = averageRating
             };
@@ -93,17 +93,17 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View(new MovieFormViewModel());
+            return View(new TVShowFormViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MovieFormViewModel model)
+        public async Task<IActionResult> Create(TVShowFormViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var dto = model.ToDto();
-                await _movieService.AddMovieAsync(dto);
+                await _tvShowService.AddTVShowAsync(dto);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -113,24 +113,24 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var movieDto = await _movieService.GetMovieDetailsAsync(id);
-            if (movieDto == null)
+            var tvShowDto = await _tvShowService.GetTVShowDetailsAsync(id);
+            if (tvShowDto == null)
             {
                 return NotFound();
             }
 
-            var viewModel = MovieFormViewModel.FromDto(movieDto);
+            var viewModel = TVShowFormViewModel.FromDto(tvShowDto);
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(MovieFormViewModel model)
+        public async Task<IActionResult> Edit(TVShowFormViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var dto = model.ToDto();
-                await _movieService.UpdateMovieAsync(dto);
+                await _tvShowService.UpdateTVShowAsync(dto);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -140,16 +140,16 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var movieDto = await _movieService.GetMovieDetailsAsync(id);
-            if (movieDto == null)
+            var tvShowDto = await _tvShowService.GetTVShowDetailsAsync(id);
+            if (tvShowDto == null)
             {
                 return NotFound();
             }
 
-            var viewModel = new MovieDeleteViewModel
+            var viewModel = new TVShowDeleteViewModel
             {
-                Id = movieDto.Id,
-                Title = movieDto.Title
+                Id = tvShowDto.Id,
+                Title = tvShowDto.Title
             };
 
             return View(viewModel);
@@ -159,7 +159,7 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _movieService.DeleteMovieAsync(id);
+            await _tvShowService.DeleteTVShowAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

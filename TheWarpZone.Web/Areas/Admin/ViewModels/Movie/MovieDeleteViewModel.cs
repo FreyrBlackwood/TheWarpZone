@@ -1,4 +1,4 @@
-﻿namespace TheWarpZone.Web.Areas.Admin.ViewModels
+﻿namespace TheWarpZone.Web.Areas.Admin.ViewModels.Movie
 {
     public class MovieDeleteViewModel
     {

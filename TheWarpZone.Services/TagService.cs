@@ -24,6 +24,24 @@ namespace TheWarpZone.Services
             return tags.Select(TagMapper.ToDto).ToList();
         }
 
+        public async Task<IEnumerable<string>> GetAllTagsForMoviesAsync()
+        {
+            return await _context.Tags
+                .Where(tag => tag.Movies.Any())
+                .Select(tag => tag.Name)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<string>> GetAllTagsForTVShowsAsync()
+        {
+            return await _context.Tags
+                .Where(tag => tag.TVShows.Any())
+                .Select(tag => tag.Name)
+                .Distinct()
+                .ToListAsync();
+        }
+
         public async Task<TagDto> GetTagByIdAsync(int id)
         {
             var tag = await _context.Tags.FindAsync(id);
@@ -58,24 +76,6 @@ namespace TheWarpZone.Services
 
             _context.Tags.Remove(tag);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<MovieDto>> GetMoviesByTagAsync(int tagId)
-        {
-            var movies = await _context.Movies
-                .Where(m => m.Tags.Any(t => t.Id == tagId))
-                .ToListAsync();
-
-            return movies.Select(MovieMapper.ToDto).ToList();
-        }
-
-        public async Task<IEnumerable<TVShowDto>> GetTVShowsByTagAsync(int tagId)
-        {
-            var tvShows = await _context.TVShows
-                .Where(tv => tv.Tags.Any(t => t.Id == tagId))
-                .ToListAsync();
-
-            return tvShows.Select(TVShowMapper.ToDto).ToList();
         }
     }
 }

@@ -1,0 +1,16 @@
+﻿@model TheWarpZone.Web.Areas.Admin.ViewModels.TVShow.TVShowDeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete TV Show";
+}
+
+<h1>Delete TV Show</h1>
+
+<p>Are you sure you want to delete the TV show <strong>@Model.Title</strong>?</p>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

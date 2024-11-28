@@ -2,14 +2,14 @@
 
 <h2>Add Review</h2>
 
-<form asp-action="Add" method="post">
-    <input type="hidden" name="TVShowId" value="0" />
-    <input type="hidden" name="MovieId" value="@Model.MovieId"/>
+<form asp-action="AddForTVShow" method="post">
+    <input type="hidden" name="MovieId" value="0" />
+    <input type="hidden" name="TVShowId" value="@Model.TVShowId" />
     <div class="form-group">
         <label for="Comment">Comment</label>
         <textarea name="Comment" class="form-control" rows="5">@Model.Comment</textarea>
         <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-    <a asp-action="Index" asp-route-movieId="@Model.MovieId" class="btn btn-secondary">Cancel</a>
+    <a asp-action="IndexForTVShow" asp-route-tvShowId="@Model.TVShowId" class="btn btn-secondary">Cancel</a>
 </form>

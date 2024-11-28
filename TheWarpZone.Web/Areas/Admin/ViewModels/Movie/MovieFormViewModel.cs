@@ -5,7 +5,7 @@ using System.Linq;
 using TheWarpZone.Common.Constraints;
 using TheWarpZone.Common.DTOs;
 
-namespace TheWarpZone.Web.Areas.Admin.ViewModels
+namespace TheWarpZone.Web.Areas.Admin.ViewModels.Movie
 {
     public class MovieFormViewModel
     {
@@ -34,13 +34,13 @@ namespace TheWarpZone.Web.Areas.Admin.ViewModels
         {
             return new MovieDto
             {
-                Id = this.Id,
-                Title = this.Title,
-                Description = this.Description,
-                Director = this.Director,
-                ReleaseDate = this.ReleaseDate,
-                ImageUrl = this.ImageUrl,
-                Tags = string.IsNullOrWhiteSpace(this.TagsString)
+                Id = Id,
+                Title = Title,
+                Description = Description,
+                Director = Director,
+                ReleaseDate = ReleaseDate,
+                ImageUrl = ImageUrl,
+                Tags = string.IsNullOrWhiteSpace(TagsString)
                     ? new List<string>()
                     : TagsString.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(tag => tag.Trim())

@@ -11,12 +11,12 @@ public class TVShow
     public string Title { get; set; }
 
     [MaxLength(TVShowConstraints.DescriptionMaxLength)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [Required]
     public DateTime ReleaseDate { get; set; }
 
-    public string ImageUrl { get; set; }
+    public string? ImageUrl { get; set; }
     public ICollection<Season> Seasons { get; set; } = new List<Season>();
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
     public ICollection<Rating> Ratings { get; set; } = new List<Rating>();

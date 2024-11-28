@@ -1,8 +1,7 @@
-﻿@using TheWarpZone.Web.ViewModels.Shared.Movie
-@model MovieDetailsViewModel
+﻿@model TheWarpZone.Web.ViewModels.Shared.TVShow.TVShowDetailsViewModel
 
 @{
-    ViewData["Title"] = "Movie Details";
+    ViewData["Title"] = "TV Show Details";
 }
 
 <h1>@Model.Title</h1>
@@ -12,8 +11,7 @@
         <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid">
     </div>
     <div class="col-md-8">
-        <h4>Director: @Model.Director</h4>
-        <h5>Release Date: @Model.ReleaseDate.ToShortDateString()</h5>
+        <h4>Release Date: @Model.ReleaseDate.ToShortDateString()</h4>
         <h5>Average Rating: <span id="averageRating">@Model.AverageRating</span></h5>
         <p>@Model.Description</p>
 
@@ -28,12 +26,12 @@
         @if (User.Identity.IsAuthenticated)
         {
             <h5>Your Rating: <span id="userRating">@Model.UserRating</span></h5>
-            <form id="ratingForm" asp-controller="Rating" asp-action="AddOrUpdateRating" method="post">
+            <form id="ratingForm" asp-controller="Rating" asp-action="AddOrUpdateRating" method="post" asp-area="" class="d-inline">
                 <input type="hidden" name="mediaId" value="@Model.Id" />
-                <input type="hidden" name="mediaType" value="Movie" />
+                <input type="hidden" name="mediaType" value="TVShow" />
 
                 <div class="form-group">
-                    <label for="rating">Rate this Movie:</label>
+                    <label for="rating">Rate this TV Show:</label>
                     <select name="ratingValue" class="form-control" id="rating">
                         @for (int i = 1; i <= 5; i++)
                         {
@@ -53,18 +51,17 @@
 
             @if (Model.UserRating > 0)
             {
-                <form id="removeRatingForm" asp-controller="Rating" asp-action="DeleteRating" method="post">
+                <form id="removeRatingForm" asp-controller="Rating" asp-action="DeleteRating" method="post" asp-area="" class="d-inline">
                     <input type="hidden" name="mediaId" value="@Model.Id" />
-                    <input type="hidden" name="mediaType" value="Movie" />
-                    <button type="submit" class="btn btn-danger mt-2">Remove Rating</button>
+                    <input type="hidden" name="mediaType" value="TVShow" />
+                    <button type="submit" class="btn btn-danger">Remove Rating</button>
                 </form>
             }
-
             <h5>Add to Your Watchlist:</h5>
-            <form asp-controller="UserMediaList" asp-action="AddToList" method="post">
-                <input type="hidden" name="MovieId" value="@Model.Id" />
+            <form asp-controller="UserMediaList" asp-action="AddToList" method="post" asp-area="" class="d-inline">
+                <input type="hidden" name="TVShowId" value="@Model.Id" />
                 <input type="hidden" name="Title" value="@Model.Title" />
-                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Movie", new { id = Model.Id })" />
+                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "TVShow", new { id = Model.Id, area = "Admin" })" />
 
                 <div class="form-group">
                     <select name="Status" class="form-control">
@@ -78,14 +75,19 @@
         }
         else
         {
-            <p class="text-muted">Log in to rate this movie or add it to your watchlist.</p>
+            <p class="text-muted">Log in to rate this TV Show or add it to your watchlist.</p>
         }
-        <a asp-action="Index" class="btn btn-secondary">Back to Movies</a>
-    </div>
-    <div>
-        <a asp-controller="Review" asp-action="Index" asp-route-movieId="@Model.Id" class="btn btn-secondary">View All Reviews</a>
-    </div>
+        <div>
+            <a asp-controller="Review" asp-action="IndexForTVShow" asp-route-tvShowId="@Model.Id" asp-area="" class="btn btn-secondary">View All Reviews</a>
+        </div>
 
+
+        <div class="mt-3">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
