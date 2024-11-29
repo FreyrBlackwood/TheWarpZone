@@ -1,7 +1,7 @@
 ﻿using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
 
-namespace TheWarpZone.Data.Mappers
+namespace TheWarpZone.Services.Mappers
 {
     public static class TVShowMapper
     {

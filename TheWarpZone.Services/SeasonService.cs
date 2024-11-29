@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TheWarpZone.Common.DTOs;
 using TheWarpZone.Data;
-using TheWarpZone.Data.Mappers;
+using TheWarpZone.Services.Mappers;
 using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
