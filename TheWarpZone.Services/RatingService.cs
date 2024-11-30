@@ -19,6 +19,16 @@ namespace TheWarpZone.Services
 
         public async Task AddOrUpdateRatingForMovieAsync(int movieId, int ratingValue, string userId)
         {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentException("UserId cannot be null or empty.", nameof(userId));
+            }
+
+            if (ratingValue < 1 || ratingValue > 5)
+            {
+                throw new ArgumentException("Rating value must be between 1 and 5.", nameof(ratingValue));
+            }
+
             var existingRating = await _context.Ratings
                 .FirstOrDefaultAsync(r => r.MovieId == movieId && r.UserId == userId);
 
@@ -45,6 +55,17 @@ namespace TheWarpZone.Services
 
         public async Task AddOrUpdateRatingForTVShowAsync(int tvShowId, int ratingValue, string userId)
         {
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentException("UserId cannot be null or empty.", nameof(userId));
+            }
+
+            if (ratingValue < 1 || ratingValue > 5)
+            {
+                throw new ArgumentException("Rating value must be between 1 and 5.", nameof(ratingValue));
+            }
+
             var existingRating = await _context.Ratings
                 .FirstOrDefaultAsync(r => r.TVShowId == tvShowId && r.UserId == userId);
 

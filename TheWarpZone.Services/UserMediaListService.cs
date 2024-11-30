@@ -36,6 +36,11 @@ namespace TheWarpZone.Services
                 throw new ArgumentNullException(nameof(userMediaListDto), "UserMediaList cannot be null.");
             }
 
+            if (userMediaListDto.MovieId.HasValue && userMediaListDto.TVShowId.HasValue)
+            {
+                throw new InvalidOperationException("Cannot set both MovieId and TVShowId.");
+            }
+
             var entity = UserMediaListMapper.ToEntity(userMediaListDto);
 
             await _context.UserMediaLists.AddAsync(entity);

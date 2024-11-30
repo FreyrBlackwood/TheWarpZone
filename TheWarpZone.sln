@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheWarpZone.Services", "The
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheWarpZone.Common", "TheWarpZone.Common\TheWarpZone.Common.csproj", "{9B2A6686-9A77-43C6-A33F-F841FA43E578}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheWarpZone.Services.Tests", "TheWarpZone.Services.Tests\TheWarpZone.Services.Tests.csproj", "{A3A70455-EB5B-4580-8B5D-FBACF97C7291}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9B2A6686-9A77-43C6-A33F-F841FA43E578}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B2A6686-9A77-43C6-A33F-F841FA43E578}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B2A6686-9A77-43C6-A33F-F841FA43E578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3A70455-EB5B-4580-8B5D-FBACF97C7291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3A70455-EB5B-4580-8B5D-FBACF97C7291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3A70455-EB5B-4580-8B5D-FBACF97C7291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3A70455-EB5B-4580-8B5D-FBACF97C7291}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
