@@ -9,6 +9,7 @@ using TheWarpZone.Services.Interfaces;
 
 namespace TheWarpZone.Services
 {
+    // Some of the methods will be used in the future when I expand the project
     public class TagService : ITagService
     {
         private readonly ApplicationDbContext _context;
