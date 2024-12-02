@@ -108,9 +108,16 @@ namespace TheWarpZone.Services
             existingTVShow.ReleaseDate = tvShowDto.ReleaseDate;
             existingTVShow.ImageUrl = tvShowDto.ImageUrl;
 
-            existingTVShow.Tags = tvShowDto.Tags.Select(tagName =>
-                _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
-            ).ToList();
+            if (tvShowDto.Tags != null)
+            {
+                existingTVShow.Tags = tvShowDto.Tags.Select(tagName =>
+                    _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
+                ).ToList();
+            }
+            else
+            {
+                existingTVShow.Tags.Clear();
+            }
 
             _context.TVShows.Update(existingTVShow);
             await _context.SaveChangesAsync();
