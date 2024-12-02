@@ -11,9 +11,9 @@
     <div class="col-md-4">
         <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid">
     </div>
-    <div class="col-md-8">
+    <div class="col-md-4">
         <h4>Release Date: @Model.ReleaseDate.ToShortDateString()</h4>
-        <p>@Model.Description</p>
+        <h5>Average Rating: <span id="averageRating">@Model.AverageRating</span></h5>
 
         <h5>Tags:</h5>
         <ul>
@@ -22,9 +22,10 @@
                 <li>@tag</li>
             }
         </ul>
-
-        <h5>Average Rating: <span id="averageRating">@Model.AverageRating</span></h5>
-
+        <h5>Description:</h5>
+        <p>@Model.Description</p>
+    </div>
+    <div class="col-md-4">
         @if (User.Identity.IsAuthenticated)
         {
             <h5>Your Rating: <span id="userRating">@Model.UserRating</span></h5>
@@ -81,10 +82,14 @@
         {
             <p class="text-muted">Log in to rate this TV Show or add it to your watchlist.</p>
         }
-        <a asp-controller="EpisodeList" asp-action="Index" asp-route-tvShowId="@Model.Id" class="btn btn-primary">View Episodes</a>
-        <a asp-action="Index" class="btn btn-secondary">Back to TV Shows</a>
-        <div>
+        <div class="mt-3">
             <a asp-controller="Review" asp-action="IndexForTVShow" asp-route-tvShowId="@Model.Id" class="btn btn-secondary">View All Reviews</a>
+        </div>
+        <div class="mt-3">
+            <a asp-controller="EpisodeList" asp-action="Index" asp-route-tvShowId="@Model.Id" class="btn btn-primary">View Episodes</a>
+        </div>
+        <div class="mt-3">
+            <a asp-action="Index" class="btn btn-secondary">Back to TV Shows</a>
         </div>
 
     </div>
