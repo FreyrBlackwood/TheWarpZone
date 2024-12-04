@@ -41,6 +41,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -66,6 +67,9 @@ using (var scope = app.Services.CreateScope())
             await userManager.AddToRoleAsync(adminUser, "Administrator");
         }
     }
+
+    var movieSeeder = new MovieSeeder(context);
+    await movieSeeder.SeedAsync();
 }
 
 // Configure the HTTP request pipeline

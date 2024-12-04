@@ -84,7 +84,14 @@
         }
 
         <div class="mt-3"><a asp-controller="Review" asp-action="Index" asp-route-movieId="@Model.Id" class="btn btn-secondary">View All Reviews</a></div>
-        <div class="mt-3"><a asp-action="Index" class="btn btn-secondary">Back to Movies</a></div>
+        <div class="mt-3">
+            <a asp-action="Index"
+               asp-route-searchQuery="@ViewBag.SearchQuery"
+               asp-route-sortBy="@ViewBag.SortBy"
+               asp-route-tags="@string.Join(",", ViewBag.Tags as List<string>)"
+               asp-route-pageNumber="@ViewBag.PageNumber"
+               class="btn btn-secondary">Back to Movies</a>
+        </div>
     </div>
 </div>
 

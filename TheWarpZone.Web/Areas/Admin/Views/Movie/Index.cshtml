@@ -59,7 +59,13 @@
                             <img src="@movie.ImageUrl" class="card-img-top" style="width: 200px; height: 300px; object-fit: cover;" alt="@movie.Title">
                             <div class="card-body">
                                 <h5 class="card-title">@movie.Title</h5>
-                                <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-primary btn-sm">Details</a>
+                                <a asp-action="Details"
+                                   asp-route-id="@movie.Id"
+                                   asp-route-searchQuery="@ViewBag.SearchQuery"
+                                   asp-route-sortBy="@ViewBag.SortBy"
+                                   asp-route-tags="@string.Join(",", ViewBag.Tags as List<string>)"
+                                   asp-route-pageNumber="@Model.CurrentPage"
+                                   class="btn btn-primary btn-sm">Details</a>
                             </div>
                         </div>
                     </div>
