@@ -26,11 +26,9 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string searchQuery, string sortBy, string tags, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchQuery, string sortBy, List<string> tags, int pageNumber = 1, int pageSize = 10)
         {
-            var tagList = string.IsNullOrEmpty(tags)
-                ? new List<string>()
-                : tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            var tagList = tags ?? new List<string>();
 
             var paginatedTVShows = await _tvShowService.GetTVShowsAsync(pageNumber, pageSize, searchQuery, sortBy, tagList);
 
@@ -57,7 +55,7 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id, string searchQuery, string sortBy, List<string> tags, int pageNumber = 1, int pageSize = 10)
         {
             var tvShowDto = await _tvShowService.GetTVShowDetailsAsync(id);
             if (tvShowDto == null)
@@ -86,6 +84,11 @@ namespace TheWarpZone.Web.Areas.Admin.Controllers
                 UserRating = userRating?.Value ?? 0,
                 AverageRating = averageRating
             };
+
+            ViewBag.SearchQuery = searchQuery;
+            ViewBag.SortBy = sortBy;
+            ViewBag.Tags = tags;
+            ViewBag.PageNumber = pageNumber;
 
             return View(viewModel);
         }

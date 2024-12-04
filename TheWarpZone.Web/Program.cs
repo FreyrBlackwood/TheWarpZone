@@ -70,6 +70,8 @@ using (var scope = app.Services.CreateScope())
 
     var movieSeeder = new MovieSeeder(context);
     await movieSeeder.SeedAsync();
+    var tvshowSeeder = new TVShowSeeder(context);
+    await tvshowSeeder.SeedAsync();
 }
 
 // Configure the HTTP request pipeline

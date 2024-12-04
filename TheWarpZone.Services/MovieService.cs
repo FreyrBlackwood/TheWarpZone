@@ -86,9 +86,11 @@ namespace TheWarpZone.Services
             var movieEntity = MovieMapper.ToEntity(movieDto);
             if (movieDto.Tags != null && movieDto.Tags.Any())
             {
-                movieEntity.Tags = movieDto.Tags.Select(tagName =>
+                var resolvedTags = movieDto.Tags.Select(tagName =>
                     _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
                 ).ToList();
+
+                movieEntity.Tags = resolvedTags;
             }
 
             await _context.Movies.AddAsync(movieEntity);
@@ -117,18 +119,16 @@ namespace TheWarpZone.Services
             existingMovie.ReleaseDate = movieDto.ReleaseDate;
             existingMovie.ImageUrl = movieDto.ImageUrl;
 
-            var newTags = movieDto.Tags?.Select(tagName =>
-                _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
-            ).ToList();
-
-            if (newTags != null)
+            if (movieDto.Tags != null && movieDto.Tags.Any())
             {
-                // Remove tags not in the new list
+                var newTags = movieDto.Tags.Select(tagName =>
+                    _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
+                ).ToList();
+
                 existingMovie.Tags = existingMovie.Tags
                     .Where(tag => newTags.Any(newTag => newTag.Name == tag.Name))
                     .ToList();
 
-                // Add new tags that aren't already associated
                 foreach (var newTag in newTags)
                 {
                     if (!existingMovie.Tags.Any(existingTag => existingTag.Name == newTag.Name))

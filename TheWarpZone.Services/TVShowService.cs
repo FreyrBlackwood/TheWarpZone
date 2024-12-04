@@ -86,6 +86,14 @@ namespace TheWarpZone.Services
 
             var tvShowEntity = TVShowMapper.ToEntity(tvShowDto);
 
+            if (tvShowDto.Tags != null && tvShowDto.Tags.Any())
+            {
+                tvShowEntity.Tags = tvShowDto.Tags
+                    .Select(tagName =>
+                        _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName })
+                    .ToList();
+            }
+
             await _context.TVShows.AddAsync(tvShowEntity);
             await _context.SaveChangesAsync();
         }
@@ -97,7 +105,10 @@ namespace TheWarpZone.Services
                 throw new ArgumentNullException(nameof(tvShowDto), "TV Show data cannot be null.");
             }
 
-            var existingTVShow = await _context.TVShows.FindAsync(tvShowDto.Id);
+            var existingTVShow = await _context.TVShows
+                .Include(tv =>tv.Tags)
+                .FirstOrDefaultAsync(tv => tv.Id == tvShowDto.Id);
+
             if (existingTVShow == null)
             {
                 throw new KeyNotFoundException($"TV Show with ID {tvShowDto.Id} not found.");
@@ -108,11 +119,24 @@ namespace TheWarpZone.Services
             existingTVShow.ReleaseDate = tvShowDto.ReleaseDate;
             existingTVShow.ImageUrl = tvShowDto.ImageUrl;
 
-            if (tvShowDto.Tags != null)
+            var newTags = tvShowDto.Tags?
+                .Select(tagName =>
+                    _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName })
+                .ToList();
+
+            if (newTags != null)
             {
-                existingTVShow.Tags = tvShowDto.Tags.Select(tagName =>
-                    _context.Tags.FirstOrDefault(t => t.Name == tagName) ?? new Tag { Name = tagName }
-                ).ToList();
+                existingTVShow.Tags = existingTVShow.Tags
+                    .Where(tag => newTags.Any(newTag => newTag.Name == tag.Name))
+                    .ToList();
+
+                foreach (var newTag in newTags)
+                {
+                    if (!existingTVShow.Tags.Any(existingTag => existingTag.Name == newTag.Name))
+                    {
+                        existingTVShow.Tags.Add(newTag);
+                    }
+                }
             }
             else
             {
